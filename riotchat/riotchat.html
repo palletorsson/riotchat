@@ -1,0 +1,244 @@
+<head>
+	<script src="http://crypto-js.googlecode.com/svn/tags/3.1.2/build/rollups/md5.js"></script>
+	<script src="http://crypto-js.googlecode.com/svn/tags/3.1.2/build/rollups/aes.js"></script>
+    <script> var JsonFormatter = {
+        stringify: function (cipherParams) {
+            // create json object with ciphertext
+            var jsonObj = {
+                ct: cipherParams.ciphertext.toString(CryptoJS.enc.Base64)
+            };
+
+            // optionally add iv and salt
+            if (cipherParams.iv) {
+                jsonObj.iv = cipherParams.iv.toString();
+            }
+            if (cipherParams.salt) {
+                jsonObj.s = cipherParams.salt.toString();
+            }
+
+            // stringify json object
+            return JSON.stringify(jsonObj);
+        },
+
+        parse: function (jsonStr) {
+            // parse json string
+            var jsonObj = JSON.parse(jsonStr);
+
+            // extract ciphertext from json object, and create cipher params object
+            var cipherParams = CryptoJS.lib.CipherParams.create({
+                ciphertext: CryptoJS.enc.Base64.parse(jsonObj.ct)
+            });
+
+            // optionally extract iv and salt
+            if (jsonObj.iv) {
+                cipherParams.iv = CryptoJS.enc.Hex.parse(jsonObj.iv)
+            }
+            if (jsonObj.s) {
+                cipherParams.salt = CryptoJS.enc.Hex.parse(jsonObj.s)
+            }
+
+            return cipherParams;
+        }
+    };
+	</script>
+	<title>Riot chat</title>
+</head>
+
+<body>
+<div id="wrap">
+
+
+   {{> header}}
+	<div>
+	{{#if currentUser}}	
+		{{> chat}}		
+	{{else}}	
+		{{> chat_holder}}
+	{{/if}}	
+	</div>
+	<div>
+	{{> avatarList}}
+	</div> </div> 
+	{{>chat_message}}
+</body>
+
+
+<template name="header">
+	<div class="navbar navbar-default navbar-fixed-top">
+   <div class="navbar-inner">
+        <div class="container">
+	    <ul class="nav navbar-nav">  
+          	<li>
+				<a class="navbar-brand" href="#">Riot chat</a>
+			</li>
+        </ul>      
+        <ul class="nav navbar-nav">
+        	<li class="btn-group">
+				<button type="button" class="btn btn-default" id="contract_left">◄ sized</span></button>
+				<button type="button" class="btn btn-default" id="expand_right">► full</span></span></button>
+			</li>
+			<li>
+		
+			</li>
+        </ul>
+    
+        <ul class="nav navbar-nav navbar-left pull-left">
+           	<li>
+				{{#if currentUser}}
+					{{> avatarForm}}
+				{{/if}}
+			</li>
+        </ul>
+        <ul class="nav navbar-nav navbar-right pull-right login_buttons">
+            <li>
+				{{loginButtons}} 
+			</li>
+		</ul>
+	</div>	
+</template>
+
+
+<template name="secret_form">
+	<div class="accounts-dialog edit_key_overlay">
+		{{#if changing_secret}}
+			Secret ( <a id="close_secret">Close</a> ) :<input type="password" id="pass" name="p">
+		{{else}}
+			<a id="change_secret" class="login-link-text">Chat secret ▾</a>
+		{{/if}}			
+	</div>
+	</div>	</div>
+</template>
+
+<template name="avatarForm">
+<div class="accounts-dialog edit_avatar_overlay">
+		{{#if editing}}
+			<h4>Avatar Settings ( <a id="cancel_edit">x</a> ) </h4>
+			<form class="form-inline" role="form">
+
+			  <div class="form-group">
+				<label class="sr-only" for="name">Nic:</label>
+				<input type="text" id="avatar_name" class="form-control" value="{{avatar.avatar_name}}">
+			  </div>  	
+			  <div class="form-group">
+				<label class="sr-only" for="message">Message:</label>
+				<input type="text" id="avatar_message" class="form-control" value="{{avatar.avatar_message}}">
+			  </div>
+			  <div class="form-group">
+				<label class="sr-only" for="image">Select riot Avatar:</label>
+
+				{{> avatar_choose}}
+				
+				<div style="clear:both"></div>
+				 Selected: <input type="text" id="avatar_image" value="{{avatar.avatar_img}}" disabled="disabled">
+			  </div>	
+				<input type="hidden" id="id" value="{{avatar.avatar_id}}">
+			  	<button class="btn btn-primary" id="change">change</button>
+			</form>
+		{{else}}
+			<a  id="edit" class="login-link-text">
+				{{#if avatar}}
+	       			You ▾
+				{{else}}
+					Configure your avatar and nic ▾
+				{{/if}}
+
+    		</a>
+		{{/if}}
+	</div>
+</template>
+<template name="avatar_choose">
+ 	<div class="checkbox_div">	
+	{{#each avatars}}
+		<div class="checkbox_container">
+			<div>  
+				<a href="#" class="choose_avatar" id="{{name}}" name="{{name}}.{{type}}"><img src="img/{{name}}.{{type}}"  class="form_img"></a>
+			</div>
+	 	</div>
+	{{/each}}
+	</div>
+</template>
+
+<template name="avatarList">
+	<div class="under_ground">
+		<div class="perspective_grid">
+		{{#each avatars}}
+			<div class="avatar_image" class="player" id="{{avatar_id}}"> 
+				<div class="player under" style="top:{{avatar_top}}px; left:{{avatar_left}}px">{{avatar_name}}</div> 
+				<img src="img/{{avatar_img}}" alt="{{avatar_name}}" id="{{avatar_id}}" class="player player_size" style="top:{{avatar_top}}px; left:{{avatar_left}}px"> 
+			</div>
+		{{/each}}
+		{{>npcList}}
+		</div>
+	</div>
+</template>
+
+<template name="npcList">
+	<div class="perspective_npc_grid">
+	{{#each npcs}}
+		<div class="npc_image" class="npc" id="{{id}}"> 
+		<div class="npc_message" id="npc_message_{{id}}" style="display:hidden">{{{npc_message}}}</div>
+			<img src="img/{{img}}" class="npc" class="object_1" alt="{{name}}" style="top:{{p_y}}px; left:{{p_x}}px; height:{{h}}px;">
+		</div>
+	{{/each}}
+	</div>
+</template>
+
+<template name="chat">
+	<div class="messages">
+		<div class="text"> 
+			{{#if currentUser}}		
+			{{> messages}}
+			<br>
+		</div>
+		<div class="chatbox">
+			{{> chat_message}}
+		</div>
+		{{else}}
+			{{> secret_form}}
+		{{/if}}			
+	</div>
+</template>
+
+<template name="messages">
+	{{#each messages}}
+		<div class="media">
+        	<div class="pull-left avarar_name_time" href="#">
+				<img src="img/{{avatar_img}}" alt="{{name}}" style="width:50px; height:50px;">	
+        	</div>
+	        <div class="media-body" id="{{message_id}}"> 
+			<span class="media-heading"> 
+			<span class="time chat_time pull-right"> 
+				<small> {{prettifyDate time}} </small> 
+			</span> 
+			<span class="chat_name">< {{name}}></span>
+				<div class="divider"></div>
+				
+				{{#if currentUser}}
+					<span class="remove"></span> </span>
+				{{/if}}
+          	<span class="chat_message"> {{message}} 
+			</span> 
+        </div>
+        </div>				
+	</div>
+	{{/each}}
+</template>
+
+<template name="chat_holder">
+	<div class="messages">
+		login to see messages
+	</div>
+</template>
+
+<template name="chat_message">
+	<div class="chat_form">
+	    <span class="input-group-addon"> </span>
+		{{#with chatuser}}
+			 {{user}}:
+		{{/with}}	
+	<input type="text" class="form-control" id="message"/> 		
+    </div>
+</template>
+
+
+
