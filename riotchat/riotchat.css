@@ -94,6 +94,7 @@ html, body {
 	overflow: none;
     width:      100%;
     height:     500px;
+	background: rgba(0,0,0,0.5)
 }
 
 
@@ -113,6 +114,7 @@ html, body {
 	height: 640px;
     overflow:   auto;    
     bottom:     0;
+	background: rgba(200, 200, 200, 0.5);
 }
 
 .hide_chat {
@@ -120,8 +122,9 @@ html, body {
 	left: -120px;
 }
 
-.show_chat, .expand_chat, .contract_chat, .onmiHal {
+.show_chat, .expand_chat, .contract_chat, .onmiHal, .contracted_chat, .hide_chat {
 	cursor:pointer; 
+	background: rgba(200, 200, 200, 0.5);
 }
 
 .chat_form {
@@ -157,12 +160,32 @@ html, body {
 
 
 .avarar_name_time {
-	width:50px; 
-	font-size: 12px; 
+	width: 50px; 
+	font-size: 10px; 
 }
-
+.time {
+	font-size: 10px; 
+}
+.chat_name {
+	font-size: 14px; 
+	color: #FF00FF;
+	text-shadow: 0 6px 12px 2px rgba(0, 0, 0, 0.7); 
+	font-family:monospace; 
+	font-weight:bold; 
+}
 .chat_time {
 	margin-right: 20px; 	
+}
+.chat_message {
+	display:block; 
+	background-color: white;
+	background: none repeat scroll 0 0 #FFC0CB;
+    border: 1px solid #777777;
+    border-radius: 2px;
+    box-shadow: 0 6px 12px 2px rgba(0, 0, 0, 0.7);
+    color: #333333;    
+	margin:10px; 
+	padding:4px; 
 }
 
 
@@ -194,6 +217,17 @@ html, body {
 
 }
 
+.expanded .chat_message {
+	display:inline; 
+	background-color: #000;
+	background: #000;
+    border: 0px none;
+    border-radius: 0;
+    box-shadow: 0;
+    color: #FFFF00;    
+	margin:0; 
+	padding:0; 
+}
 .expanded img {
 	display:none;
 }

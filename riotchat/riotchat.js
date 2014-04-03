@@ -174,9 +174,9 @@ var insert_html_bad = '<div class="avatar_image removing" id=""> <div class="ins
  		//Message
 		HandleMessage.ScrollDown = function() {
 			var chatDiv = $(".messages");
-			console.log(chatDiv.prop("scrollHeight"));
 			chatDiv.scrollTop(chatDiv.prop("scrollHeight"));
 		}; 		
+
 		Session.set("showchat", true); 			
 
 	});
@@ -288,45 +288,7 @@ var insert_html_bad = '<div class="avatar_image removing" id=""> <div class="ins
 				} 
 			}
 		}, 
-		'click img.npc': function (e, t) {
-			console.log("omni"); 
-			id = this.id; 
-			type = this.type; 
-			var m = $('#npc_message_'+id);
-
-			if (type == "rant") {		
-				m.css({top: e.pageY+'px',left:e.pageX+'px'}).show().fadeOut(10000); 
-				return false; 
-			} else {
-				m.html("Ask omniMarx ( <a>x</a> ): <input type='text' id='ask_irc'>").css({top: e.pageY+'px',left:e.pageX+'px'}).show().find('input').focus().end().find('a').css({cursor:'pointer'}).on('click', function(){$(this).parent().hide()});;
-			}
-		}, 
-		'click img.npc': function (e, t) {
-			
-			id = this.id; 					
-			var m = $('#npc_message_'+id);
-			m.css({top: e.pageY+'px',left:e.pageX+'px'}).show();//.fadeOut(10000); 
-			return false;
-				
-		},  
-		'keydown input#ask_irc' : function (e, t) {
-    		if (e.which == 13) {
-				element = t.find("#ask_irc");
-					Meteor.call('fetchFromService', element.value, function(err, respJson) {
-						if(err) {
-							console.log("error occured on receiving data on server. ", err );
-						} else {
-							$(element).val(respJson.answer);
-							setTimeout(function() {
-								$(element).val('');
-							}, 1200);													
-						}
-						
-					});
-				element.value = ""; 
-				return false;
-			} 
-		}
+		
 	}); 
 	
 	Template.gameboard.rendered = function () {
@@ -368,7 +330,8 @@ var insert_html_bad = '<div class="avatar_image removing" id=""> <div class="ins
 	Template.messages.events({
 	  	'click .removemessage': function () {
 			Messages.remove(this._id);
-	  	}
+	  	}, 
+		
 		});
 
 	// show and hide chat
@@ -388,7 +351,37 @@ var insert_html_bad = '<div class="avatar_image removing" id=""> <div class="ins
 			},
 		'click a#hidechat': function (e, t) {
 				Session.set("showchat", false);
-			}
+				HandleMessage.ScrollDown();
+			},
+		'click a#onmiHal': function (e, t) {
+			console.log("omni"); 
+			var m = $("#onmiHal_container");
+			m.html("<div id='remove_omni'><hr> Ask omniHal ( <a>close</a> ): <input type='text' id='ask_omni'></div>").css({top: e.pageY+'px',left:e.pageX+'px'}).show().find('input').focus().end().find('a').css({cursor:'pointer'}).on('click', function(){$(this).parent().hide()});;
+			
+		},  
+		'click a#remove_omni': function (e, t) {
+				$("#"+e.target.id).remove()
+			}, 
+		'keydown input#ask_omni' : function (e, t) {
+    		if (e.which == 13) {
+	
+				element = t.find("#ask_omni");
+				
+					Meteor.call('fetchFromService', element.value, function(err, respJson) {
+						if(err) {
+							console.log("error occured on receiving data on server. ", err );
+						} else {
+							$(element).val(respJson.answer);
+							setTimeout(function() {
+								$(element).val('');
+							}, 1200);													
+						}
+						
+					});
+				element.value = ""; 
+				return false;
+			} 
+		}
 	});
 
 
@@ -408,14 +401,7 @@ var insert_html_bad = '<div class="avatar_image removing" id=""> <div class="ins
 			$('.chat_form').removeClass( "irc" );
 			$('.divider').show();
 			var chatDiv = $(".messages");
-			chatDiv.scrollTop(chatDiv.prop("scrollHeight"));
-				if (chat_width == "default") {
-					$(".messages").css( "left","-300px"); 
-					chat_width = "minimized"; 
-				} else {
-					$(".messages").css( "left","0" ); 
-					chat_width = "default"; 
-				}
+			HandleMessage.ScrollDown();
 		}
 	});
 
