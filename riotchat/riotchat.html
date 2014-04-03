@@ -41,59 +41,58 @@
         }
     };
 	</script>
+
 	<title>Riot chat</title>
 </head>
 
 <body>
 <div id="wrap">
-
-
-   {{> header}}
+	{{> admin_panel}}
+    {{> header}}
 	<div>
-	{{#if currentUser}}	
-		{{> chat}}		
-	{{else}}	
-		{{> chat_holder}}
-	{{/if}}	
+	
 	</div>
 	<div>
-	{{> avatarList}}
-	</div> </div> 
-	{{>chat_message}}
+		{{> gameboard}}
+		{{> avatarList}}
+		
+	</div>
+ </div> 
+
 </body>
 
+<template name="admin_panel">
+	<div class="admin_panel_active"></div>
+</template>
 
 <template name="header">
 	<div class="navbar navbar-default navbar-fixed-top">
-   <div class="navbar-inner">
-        <div class="container">
-	    <ul class="nav navbar-nav">  
-          	<li>
-				<a class="navbar-brand" href="#">Riot chat</a>
-			</li>
-        </ul>      
-        <ul class="nav navbar-nav">
-        	<li class="btn-group">
-				<button type="button" class="btn btn-default" id="contract_left">◄ sized</span></button>
-				<button type="button" class="btn btn-default" id="expand_right">► full</span></span></button>
-			</li>
-			<li>
+		<div class="navbar-inner">
+		    <div class="container">
+			<ul class="nav navbar-nav">  
+		      	<li>
+			{{#if currentUser}}	
+				{{> chat}}		
+			{{else}}	
+				{{> chat_not_logged_in}}
+			{{/if}}
+				</li>
+		    </ul>      
 		
-			</li>
-        </ul>
-    
-        <ul class="nav navbar-nav navbar-left pull-left">
-           	<li>
-				{{#if currentUser}}
-					{{> avatarForm}}
-				{{/if}}
-			</li>
-        </ul>
-        <ul class="nav navbar-nav navbar-right pull-right login_buttons">
-            <li>
-				{{loginButtons}} 
-			</li>
-		</ul>
+		    <ul class="nav navbar-nav navbar-left pull-left">
+		       	<li>
+					{{#if currentUser}}
+						{{> avatarForm}}
+					{{/if}}
+				</li>
+		    </ul>
+		    <ul class="nav navbar-nav navbar-right pull-right login_buttons">
+		        <li>
+					{{>loginButtons}} 
+				</li>
+			</ul>
+			</div>	
+		</div>	
 	</div>	
 </template>
 
@@ -106,13 +105,12 @@
 			<a id="change_secret" class="login-link-text">Chat secret ▾</a>
 		{{/if}}			
 	</div>
-	</div>	</div>
 </template>
 
 <template name="avatarForm">
 <div class="accounts-dialog edit_avatar_overlay">
 		{{#if editing}}
-			<h4>Avatar Settings ( <a id="cancel_edit">x</a> ) </h4>
+			<h4>{{avatar.avatar_name}} Settings ( <a id="cancel_edit">x</a> ) </h4>
 			<form class="form-inline" role="form">
 
 			  <div class="form-group">
@@ -129,9 +127,9 @@
 				{{> avatar_choose}}
 				
 				<div style="clear:both"></div>
-				 Selected: <input type="text" id="avatar_image" value="{{avatar.avatar_img}}" disabled="disabled">
+				 Selected avatar: <input type="text" id="avatar_image_input" value="{{avatar.avatar_img}}">
 			  </div>	
-				<input type="hidden" id="id" value="{{avatar.avatar_id}}">
+				<input type="hidden" value="{{avatar.avatar_id}}">
 			  	<button class="btn btn-primary" id="change">change</button>
 			</form>
 		{{else}}
@@ -146,6 +144,7 @@
 		{{/if}}
 	</div>
 </template>
+
 <template name="avatar_choose">
  	<div class="checkbox_div">	
 	{{#each avatars}}
@@ -162,8 +161,8 @@
 	<div class="under_ground">
 		<div class="perspective_grid">
 		{{#each avatars}}
-			<div class="avatar_image" class="player" id="{{avatar_id}}"> 
-				<div class="player under" style="top:{{avatar_top}}px; left:{{avatar_left}}px">{{avatar_name}}</div> 
+			<div class="avatar_image" id="{{avatar_id}}"> 
+				<div class="player" style="top:{{avatar_top}}px; left:{{avatar_left}}px">{{avatar_name}}</div> 
 				<img src="img/{{avatar_img}}" alt="{{avatar_name}}" id="{{avatar_id}}" class="player player_size" style="top:{{avatar_top}}px; left:{{avatar_left}}px"> 
 			</div>
 		{{/each}}
@@ -175,28 +174,40 @@
 <template name="npcList">
 	<div class="perspective_npc_grid">
 	{{#each npcs}}
-		<div class="npc_image" class="npc" id="{{id}}"> 
+		<div class="npc_image npc" id="{{id}}"> 
 		<div class="npc_message" id="npc_message_{{id}}" style="display:hidden">{{{npc_message}}}</div>
-			<img src="img/{{img}}" class="npc" class="object_1" alt="{{name}}" style="top:{{p_y}}px; left:{{p_x}}px; height:{{h}}px;">
+			<img src="img/{{img}}" class="npc" alt="{{name}}" style="top:{{p_y}}px; left:{{p_x}}px; height:{{h}}px;">
 		</div>
 	{{/each}}
 	</div>
 </template>
 
 <template name="chat">
+{{#if showchat}}	
 	<div class="messages">
-		<div class="text"> 
-			{{#if currentUser}}		
-			{{> messages}}
-			<br>
-		</div>
-		<div class="chatbox">
+		{{#if currentUser}}		
+		
+	 		<div class="text"> 		
+				{{> messages}}
+			</div>
+			
 			{{> chat_message}}
-		</div>
+			<a id="hidechat" class="hide_chat"> Hide chat ▾</a> 
+					<a class="contracted_chat" id="contract_left">Size ▾</a>
+	
+					<a class="expand_chat" id="expand_right">Expand ▾</a>
+					<a class="onmiHal" id="onmiHal">OmniHal ▾</a>
 		{{else}}
 			{{> secret_form}}
 		{{/if}}			
 	</div>
+{{else}}
+		{{#if currentUser}}	
+			<a id="showchat" class="show_chat"> Chat ▾</a>
+		{{else}}
+			
+		{{/if}}
+{{/if}}
 </template>
 
 <template name="messages">
@@ -206,39 +217,51 @@
 				<img src="img/{{avatar_img}}" alt="{{name}}" style="width:50px; height:50px;">	
         	</div>
 	        <div class="media-body" id="{{message_id}}"> 
-			<span class="media-heading"> 
-			<span class="time chat_time pull-right"> 
-				<small> {{prettifyDate time}} </small> 
-			</span> 
-			<span class="chat_name">< {{name}}></span>
-				<div class="divider"></div>
+				<span class="media-heading"> 
+					<span class="time"> 
+						<small> {{prettifyDate time}} </small>
+					</span> 
+					<span class="chat_name"> {{name}}: </span>
+
 				
-				{{#if currentUser}}
-					<span class="remove"></span> </span>
-				{{/if}}
-          	<span class="chat_message"> {{message}} 
-			</span> 
-        </div>
-        </div>				
+						{{#if currentUser}}
+							<span class="remove"></span>
+						{{/if}}
+				  	<span class="chat_message"> {{message}} </span> 
+				</span> 
+        	</div>			
 	</div>
 	{{/each}}
 </template>
 
-<template name="chat_holder">
-	<div class="messages">
-		login to see messages
-	</div>
-</template>
-
 <template name="chat_message">
 	<div class="chat_form">
-	    <span class="input-group-addon"> </span>
+
 		{{#with chatuser}}
 			 {{user}}:
-		{{/with}}	
-	<input type="text" class="form-control" id="message"/> 		
+		{{/with}}
+	    <div class="form_input_chat">
+			<input type="text" class="form-control" id="message"/> 	
+		</div>	
     </div>
 </template>
 
+<template name="chat_not_logged_in">
+	<div class="messages">
+		Login to see messages
+	</div>
+</template>
+
+<template name="gameboard">		
+ <div class="gameboard">
+		{{gameboard.name}}  
+</div>
+<div class="center">
+	
+	<div class="the_canvas">
+		<canvas id="myCanvas" width="1400" height="700"></canvas>
+	</div>
+</div>
+</template>
 
 
