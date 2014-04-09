@@ -1,5 +1,5 @@
 <head>
-	<script src="http://crypto-js.googlecode.com/svn/tags/3.1.2/build/rollups/md5.js"></script>
+	<!-- <script src="http://crypto-js.googlecode.com/svn/tags/3.1.2/build/rollups/md5.js"></script>
 	<script src="http://crypto-js.googlecode.com/svn/tags/3.1.2/build/rollups/aes.js"></script>
     <script> var JsonFormatter = {
         stringify: function (cipherParams) {
@@ -40,13 +40,13 @@
             return cipherParams;
         }
     };
-	</script>
+	</script> -->
 
 	<title>Riot chat</title>
 </head>
 
 <body>
-<div id="wrap">
+
 	{{> admin_panel}}
     {{> header}}
 	<div>
@@ -57,9 +57,10 @@
 		{{> avatarList}}
 		
 	</div>
- </div> 
+
 
 </body>
+
 
 <template name="admin_panel">
 	<div class="admin_panel_active"></div>
@@ -68,11 +69,11 @@
 <template name="header">
 	<div class="navbar navbar-default navbar-fixed-top">
 		<div class="navbar-inner">
-		    <div class="container">
+		    <div class="container"> 	
 			<ul class="nav navbar-nav">  
 		      	<li>
 			{{#if currentUser}}	
-				{{> chat}}		
+			{{> chat}}		
 			{{else}}	
 				{{> chat_not_logged_in}}
 			{{/if}}
@@ -96,6 +97,10 @@
 	</div>	
 </template>
 
+<template name="meta_setting">
+	Topic: {{ meta.topic }}
+</template>
+
 
 <template name="secret_form">
 	<div class="accounts-dialog edit_key_overlay">
@@ -110,7 +115,7 @@
 <template name="avatarForm">
 <div class="accounts-dialog edit_avatar_overlay">
 		{{#if editing}}
-			<h4>{{avatar.avatar_name}} Settings ( <a id="cancel_edit">x</a> ) </h4>
+			<h4>{{avatar.avatar_name}} Settings ( <a id="cancel_edit">close</a> ) </h4>
 			<form class="form-inline" role="form">
 
 			  <div class="form-group">
@@ -164,6 +169,7 @@
 			<div class="avatar_image" id="{{avatar_id}}"> 
 				<div class="player" style="top:{{avatar_top}}px; left:{{avatar_left}}px">{{avatar_name}}</div> 
 				<img src="img/{{avatar_img}}" alt="{{avatar_name}}" id="{{avatar_id}}" class="player player_size" style="top:{{avatar_top}}px; left:{{avatar_left}}px"> 
+			<div id="talk_{{avatar_id}}" class="talk" style="top:{{avatar_top}}px; left:{{avatar_left}}px"></div>
 			</div>
 		{{/each}}
 		{{>npcList}}
@@ -184,27 +190,58 @@
 
 <template name="chat">
 {{#if showchat}}	
-	<div class="messages">
-		{{#if currentUser}}		
-		
-	 		<div class="text"> 		
-				{{> messages}}
-			</div>
-			
-			{{> chat_message}}
-			<a id="hidechat" class="hide_chat"> Hide chat ▾</a> 
-					<a class="contracted_chat" id="contract_left">Size ▾</a>
+
 	
-					<a class="expand_chat" id="expand_right">Expand ▾</a>
-					<a class="onmiHal" id="onmiHal">OmniHal ▾</a>
-					<div class="onmiHal_container" id="onmiHal_container"></div>
-		{{else}}
-			{{> secret_form}}
-		{{/if}}			
+	<ul class="nav navbar-nav">
+	 <li class="dropdown chat_choose">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown">Chat mode<b class="caret"></b></a>
+          <ul class="dropdown-menu">		
+			<li><a id="irc_mode">Irc Mode <b class="caret"></b></a></li>
+			<li><a id="hidechat">Hidden <b class="caret"></b></a></li>
+          </ul>
+        </li>
+     </ul>
+	{{#if talk_to_omnihal}}
+	<div class="onmi_overlay" id="onmiHal_container">
+		<div id='remove_omni'> <img src="img/omni.gif" style="width:80px; float:left;"/> 
+			
+			<input type='text' class="ask_omni" id='ask_omni'> 
+			<div id="omni_answer">-</div>  
+			<div class="pull-right">( <a  id='remove_omni' > close </a> ) 
+			
+			
+		</div> 
+	</div>	
 	</div>
-{{else}}
+	{{else}}
+	<div class="onmi_overlay">
+		<a class="onmiHal_link" id="onmiHal">
+			<img src="img/omni.gif" style="width:30px; float:left;"/> Ask OmniHal <b class="caret"></b>
+		</a>
+	</div>
+	{{/if}}
+
+	<div class="messages">
+	{{#if currentUser}}			
+		<div class="text"> 			 		
+		{{> messages}}
+		</div>
+		{{> chat_message}}
+	{{#if irc_mode}}	
+		<ul class="back_to_webchat">
+			<a id="showchat" class="show_chat"> back to Game Chat <b class="caret"></b></a>
+		</ul>
+	{{/if}}
+			
+	{{else}}
+		{{> secret_form}}
+	{{/if}}			
+	</div>
+	{{else}}
 		{{#if currentUser}}	
-			<a id="showchat" class="show_chat"> Chat ▾</a>
+		<ul class="nav navbar-nav">
+			<li><a id="showchat" class="show_chat"> Chat <b class="caret"></b></a></li>
+		</ul> 
 		{{else}}
 			
 		{{/if}}
@@ -212,6 +249,7 @@
 </template>
 
 <template name="messages">
+	<div class="messages_head"> 	{{> meta_setting}}	</div> 
 	{{#each messages}}
 		<div class="media">
         	<div class="pull-left avarar_name_time" href="#">
@@ -245,6 +283,7 @@
 			<input type="text" class="form-control" id="message"/> 	
 		</div>	
     </div>
+
 </template>
 
 <template name="chat_not_logged_in">
@@ -253,15 +292,21 @@
 	</div>
 </template>
 
-<template name="gameboard">		
+<template name="gameboard">	
+	
+ <div class="score_board">
+	{{ board_key gameboard.name }}
+</div>
+	
  <div class="gameboard">
-		{{gameboard.name}}  
+	{{ board_key gameboard.name }}
 </div>
 <div class="center">
-	
 	<div class="the_canvas">
-		<canvas id="myCanvas" width="1400" height="700"></canvas>
+		<canvas id="myCanvas" width="1400" height="700" style="border: 1px solid black"></canvas>
 	</div>
+
+	
 </div>
 </template>
 

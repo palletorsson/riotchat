@@ -1,5 +1,6 @@
 var Avatars = new Meteor.Collection("avatars");
 var Messages = new Meteor.Collection("messages");
+var Meta_setting = new Meteor.Collection("meta_setting");
 var Gameboard = new Meteor.Collection("gameboard");
 var Game = {};
 var Settings = {};
@@ -8,35 +9,52 @@ var HandleMessage = {};
 // Allow methods 
 
 Gameboard.allow({
-	insert: function () {
-		return true; 
+	insert: function (userId, doc) {
+		return (userId); 	
 	},
-	update: function () {
-		return true; 
+	update: function (userId, docs) {
+		return (userId);
 	},
 	remove: function () {
-		return true; 
+		return false; 
 	}
 });
 
 Messages.allow({
-	insert: function () {
-		return true; 
+	insert: function (userid, doc) {
+		console.log(doc.message.length < 500)
+		return (userid && doc.message.length < 500); 
 	},
 	update: function () {
 		return false; 
 	},
 	remove: function () {
-		return true;
+		return false;
+	}
+});
+
+Meta_setting.allow({
+	insert: function (userId, doc) {
+		return (userId && doc.topic.length < 60);
+	},
+	update: function (userId, docs, fields, modifiers) {
+		return _.all(docs, function(doc) {
+				return docs.topic.length < 60;
+		}); 
+	},
+	remove: function () {
+		return true; 
 	}
 });
 
 Avatars.allow({
-	insert: function () {
-		return true; 
+	insert: function (userId, doc) {
+		return (userId); 
 	},
-	update: function () {
-		return true; 
+	update: function(userId, docs, fields, modifiers) {
+		return _.all(docs, function(doc) {
+				return docs.avatar_id === userId;		
+		}); 
 	},
 	remove: function () {
 		return false; 
@@ -94,9 +112,18 @@ if (Meteor.isClient) {
 		Game.copy_me.src = "/img/copytile_iso.png";
 		Game.copy_me_avatar = "/img/droid-evanroth-occupy.gif"
 
- 		Game.black = new Image();
-		Game.black.src = "/img/dark_icecream.png";
+		Game.copy_me_1 = new Image();
+		Game.copy_me_1.src = "/img/copytile_iso1.png";
 
+		Game.copy_me_2 = new Image();
+		Game.copy_me_2.src = "/img/copytile_iso2.png";
+				
+ 		Game.black = new Image();
+		Game.black.src = "/img/dark.png";
+ 
+ 		Game.black_2 = new Image();
+		Game.black_2.src = "/img/dark_part.png";
+		
  		Game.black_current = new Image();
 		Game.black_current.src = "/img/black_current.png";
 		Game.black_bad_avatar = "/img/servilliance.png"
@@ -116,6 +143,10 @@ if (Meteor.isClient) {
 
 		Game.draw = function(tileMap) {
 			//console.log(tileMap)
+			//var the_game = Gameboard.findOne({});	
+
+			// tileMap = the_game.board;
+				   	
 			Game.c.clearRect (0, 0, Game.canvas.width, Game.canvas.height);
 			for (var row = 0; row < Game.grid.width; row++) {
 				for (var col = 0; col < Game.grid.height; col++) {
@@ -139,24 +170,38 @@ var insert_html_bad = '<div class="avatar_image removing" id=""> <div class="ins
 
 					*/
 				
+							
 					if ( tileMap[row] != null && tileMap[row][col] != null) {
+						
 						if ( tileMap[row][col] == 1 ) {
 							Game.tiles_green = Game.tiles_green + 1; 
-							Game.c.drawImage(Game.green_current, Math.round(tilePositionX), Math.round(tilePositionY), Game.tile.width, Game.tile.height);	
+							Game.c.drawImage(Game.green, Math.round(tilePositionX), Math.round(tilePositionY), Game.tile.width, Game.tile.height);	
 						} else if ( tileMap[row][col] == 2 ) {
 							Game.tiles_green = Game.tiles_green + 1; 
-							Game.c.drawImage(Game.green, Math.round(tilePositionX), Math.round(tilePositionY), Game.tile.width, Game.tile.height);	
+							Game.c.drawImage(Game.green_current, Math.round(tilePositionX), Math.round(tilePositionY), Game.tile.width, Game.tile.height);	
 		
 						} else if ( tileMap[row][col] == 3 ) {
 							Game.tiles_copy_me = Game.tiles_copy_me + 1; 
 							Game.c.drawImage(Game.copy_me, Math.round(tilePositionX), Math.round(tilePositionY), Game.tile.width, Game.tile.height);	
-							var insert_html_good = '<div class="avatar_image removing" id=""> <div class="npc" style="position:absolute; top:'+Math.round(tilePositionY)+'px; left:'+Math.round(tilePositionX)+'px">omni</div> <img src="'+Game.copy_me_avatar+'" alt="bad_" class="npc" style="z-index: 4; height: 200px; top:'+Math.round(tilePositionY-100)+'px; left:'+Math.round(tilePositionX-00)+'px" /> </div>'; 		
+							
+							// var insert_html_good = '<div class="avatar_image removing" id=""> <div class="npc" style="position:absolute; top:'+Math.round(tilePositionY)+'px; left:'+Math.round(tilePositionX)+'px">omni</div> <img src="'+Game.copy_me_avatar+'" alt="bad_" class="npc" style="z-index: 4; height: 200px; top:'+Math.round(tilePositionY-100)+'px; left:'+Math.round(tilePositionX-00)+'px" /> </div>'; 		
+						} else if ( tileMap[row][col] == 7 ) {
+							Game.tiles_copy_me = Game.tiles_copy_me + 1; 
+							Game.c.drawImage(Game.copy_me_1, Math.round(tilePositionX), Math.round(tilePositionY), Game.tile.width, Game.tile.height);	
+						
+						} else if ( tileMap[row][col] == 8 ) {
+							Game.tiles_copy_me = Game.tiles_copy_me + 1; 
+							Game.c.drawImage(Game.copy_me_2, Math.round(tilePositionX), Math.round(tilePositionY), Game.tile.width, Game.tile.height);	
+							
 						} else if ( tileMap[row][col] == 4 ) {
 							Game.c.drawImage(Game.black, Math.round(tilePositionX), Math.round(tilePositionY), Game.tile.width, Game.tile.height);	
 							Game.tiles_bad = Game.tiles_bad + 1; 					
 						} else if ( tileMap[row][col] == 5 ) {
-							Game.c.drawImage(Game.black_current, Math.round(tilePositionX), Math.round(tilePositionY), Game.tile.width, Game.tile.height);	
-
+							Game.c.drawImage(Game.black_2, Math.round(tilePositionX), Math.round(tilePositionY), Game.tile.width, Game.tile.height);	
+					
+							Game.tiles_bad = Game.tiles_bad + 1; 
+						} else if ( typeof (tileMap[row][col]) == "string"  ) {
+							Game.c.drawImage(Game.green_current, Math.round(tilePositionX), Math.round(tilePositionY), Game.tile.width, Game.tile.height);	
 						} else  {
 							Game.c.drawImage(Game.red, Math.round(tilePositionX), Math.round(tilePositionY), Game.tile.width, Game.tile.height);	
 						}
@@ -166,19 +211,32 @@ var insert_html_bad = '<div class="avatar_image removing" id=""> <div class="ins
 					}
 				}
 			}
-			// insert npcs into the dom
-			$(".perspective_grid .removing").remove(); 
-			$(".perspective_grid").append(insert_html_good); 
+
+			Game.tiles_bad = Game.tiles_bad - 110; 
+		
+			var all = Game.tiles_natural + Game.tiles_bad + Game.tiles_green; 
+			// var the_other = (Game.tiles_bad/all) * 100; 
+			var good = ((Game.tiles_green+Game.tiles_natural)/all) * 100;
+			$(".score_board").html("Datalove: "+good.toFixed(2)+ "%"); 
+			Game.tiles_natural = 0; Game.tiles_bad = 0; Game.tiles_green = 0; 
 		}
+		Game.init_interval = true;
 
  		//Message
 		HandleMessage.ScrollDown = function() {
 			var chatDiv = $(".messages");
 			chatDiv.scrollTop(chatDiv.prop("scrollHeight"));
 		}; 		
-
+		
+		
+		Meteor.setTimeout(function(){
+			var is_settings = Meta_setting.findOne({ _id: "1"});
+			if (!is_settings) {
+				Meta_setting.insert({ _id: "1", topic:'piracy is fun', channel: "riotchat" });
+			}
+		}, 3000);
 		Session.set("showchat", true); 			
-
+		
 	});
 
 
@@ -199,97 +257,14 @@ var insert_html_bad = '<div class="avatar_image removing" id=""> <div class="ins
 	// Gameboard functions: 
 	Meteor.subscribe("gameboard");
 
-	Template.gameboard.gameboard = function () {
-		return Gameboard.findOne({});		
+	Template.gameboard.gameboard= function () {
+		game = Gameboard.findOne({});	
+		return game;		
 	}	
-
 	
-	Template.gameboard.events({ 
- 		'click .the_canvas': function(e) {	
-			if (e.pageY > Game.topBoundary && e.pageY < Game.buttomBoundary && e.pageX > Game.leftBoundary && e.pageX < Game.rightBoundary ) {
-	 			if (Meteor.userId()) {
-					var the_game = Gameboard.findOne({});	
-
-	 				tileMap = the_game.board;
-				
-					last_row = Session.get("last_click_row") || 7;  
-					last_col = Session.get("last_click_col") || 7;  
-				
-					if (!tileMap[last_row] || tileMap[last_row] === 'undefined') {
-							tileMap[last_row] = [];
-						}
-
-					tileMap[last_row][last_col] = 2;	
-
-					// Take into account the offset on the X axis caused by centering the grid horizontally
-					Game.gridOffsetX = (Game.canvas.width / 2) - (Game.tile.width / 2);
-		
-					var col = (e.clientY - Game.gridOffsetY) * 2;
-					
-					col = ((Game.gridOffsetX + col) - e.clientX) / 2;
-					var row = ((e.clientX + col) - Game.tile.width) - Game.gridOffsetX;
-		
-					row = Math.round(row / Game.tile.height);
-					col = Math.round(col / Game.tile.height);
-				
-					// Check the boundaries!
-				
-					if (row >= 0 && 
-						col >= 0 && 
-						row <= Game.grid.width &&
-						col <= Game.grid.height) {
-
-						if (!tileMap[row] || tileMap[row] === 'undefined') {
-							tileMap[row] = [];
-						}
-
-						Session.set("last_click_row", row);
-						Session.set("last_click_col", col);  
-					
-						tileMap[row][col] = 1;	
-						
-
-						if (Game.tiles_bad < 10) {
-							tileMap[7][7] = 4; 
-						}
-
-						
-						if (Game.tiles_copyme == 0) {
-							tileMap[1][1] = 3;  
-						}		
-
-						Game.resetTileCount(); 
-
-						Gameboard.update({ _id: "1" }, { $set: { 'board' : tileMap }}); 
-
-						Meteor.call('moveAi', function(err, data) {
-							if (err) {
-								console.log(err);
-							} else {
-								console.log(data);
-								Game.draw(data);
-							}
-						});
-					
-					}
-
-					var user = Meteor.user();
-					if(user) {	
-						var avatar = Avatars.findOne({avatar_id: user._id});
-						if(avatar) {
-							Avatars.update({_id:avatar._id}, { $set: { avatar_top: e.pageY-285, avatar_left: e.pageX-75}});
-						} else {
-							console.log("make yourself an avatar")
-						}
-					} else {
-						console.log("to riot login")
-					}
-					Game.draw(tileMap);
-				} 
-			}
-		}, 
-		
-	}); 
+	Handlebars.registerHelper("board_key", function(board) {
+		return board;  
+	});		
 	
 	Template.gameboard.rendered = function () {
 	   Meteor.call('get_gameboard', function(err, data) {
@@ -301,13 +276,118 @@ var insert_html_bad = '<div class="avatar_image removing" id=""> <div class="ins
 				Game.draw(tileMap);
 			}
 		});
-
 	}
+	
+	Template.gameboard.events({ 	
+ 		'mousemove .the_canvas': function(e) {	
+			if(Game.init_interval) { 
+				Game.init_interval = false;
+				Meteor.setTimeout(function(){
+					Meteor.call('get_gameboard', function(err, data) {
+						if (err) {
+							console.log(err);
+						} else {
+						var gamemap = data;	
+						tileMap = gamemap.board;
+						Game.draw(tileMap); 
+						Game.init_interval = true;
+						}
+					});
+				}, 3000); 
+			}
+		},
+		
+ 		'click .the_canvas': function(e) {	
+			if (e.pageY > Game.topBoundary && e.pageY < Game.buttomBoundary && e.pageX > Game.leftBoundary && e.pageX < Game.rightBoundary ) {
+	 			if (Meteor.userId()) {
+						var user = Meteor.user();
+						var avatar = Avatars.findOne({avatar_id: user._id});
+						if(avatar) {
+			
+						//if (!tileMap[avatar.last_player_row] || tileMap[avatar.last_player_row] === 'undefined') {
+							//	tileMap[avatar.last_player_row] = [];
+							//}
 
+						//tileMap[last_row][last_col] = 2;	
+
+						// Take into account the offset on the X axis caused by centering the grid horizontally
+						Game.gridOffsetX = (Game.canvas.width / 2) - (Game.tile.width / 2);
+
+						var cX = e.clientX || e.pageX; 
+						var cY = e.clientY || e.pageY; 
+						
+						var col = (cY - Game.gridOffsetY) * 2;
 					
-	// Messages function: 
-	Meteor.subscribe("messages");
+						col = ((Game.gridOffsetX + col) - cX) / 2;
+						var row = ((cX + col) - Game.tile.width) - Game.gridOffsetX;
+		
+						row = Math.round(row / Game.tile.height);
+						col = Math.round(col / Game.tile.height);
+					
+						// Check the boundaries!
+				
+						if (row >= 0 && 
+							col >= 0 && 
+							row <= Game.grid.width &&
+							col <= Game.grid.height) {
 
+		//					if (!tileMap[row] || tileMap[row] === 'undefined') {
+			//					tileMap[row] = [];
+				//			}
+
+					//		tileMap[row][col] = 1;	
+						
+
+							if (Game.tiles_bad < 10) {
+	//							tileMap[7][7] = 4; 
+							}
+
+						
+							if (Game.tiles_copyme == 0) {
+//								tileMap[1][1] = 3;  
+							}		
+
+							Game.resetTileCount(); 
+
+							// Gameboard.update({ _id: "1" }, { $set: { 'board' : tileMap }}); 
+		 					last_player_row = avatar.last_player_row || 4; 
+ 							last_player_col = avatar.last_player_col || 4; 
+							
+							var position_y_top = e.pageY-240;
+							var position_x_left =  e.pageX-100;							
+
+							Meteor.call('moveAi', row, col, avatar._id, last_player_row, last_player_col, position_y_top, position_x_left, function(err, data) {
+								if (err) {
+									console.log(err);
+								} else {
+									console.log(data);
+									Game.draw(data);
+								}
+							});
+					
+						}
+					
+					} else {
+						console.log("make yourself an avatar")
+					}
+
+				} 
+			}
+		}, 
+		
+	}); 
+										
+	// Meta function: 
+	Meteor.subscribe("meta_setting");
+	
+	// Messages function: 
+	Template.meta_setting.meta = function () {	
+		var meta = Meta_setting.findOne({}); 	
+  		return meta;
+	};
+	
+	Meteor.subscribe("messages");
+	
 	Template.messages.messages = function () {	
 		if (Settings.encryption) {
 			messages = Messages.find({}, {sort: {time : 1} }).fetch();
@@ -320,8 +400,11 @@ var insert_html_bad = '<div class="avatar_image removing" id=""> <div class="ins
 	   			messages.message = decrypted.toString(CryptoJS.enc.Utf8); 
 			});
 		} else {
-			var items = Messages.find({}, {sort: {time : 1} }).fetch();
-    		return items.slice(-15);
+			var items = Messages.find({}, {sort: {time : -1}, limit: 100 }).fetch();
+			items.sort(function(a,b) { return parseInt(a.time) - parseInt(b.time) } );
+			return items; 
+
+    		
 		}
   		return messages;
 	};
@@ -339,45 +422,65 @@ var insert_html_bad = '<div class="avatar_image removing" id=""> <div class="ins
 			return Session.get("showchat"); 
 		}
 
-	Template.chat.expanded = function () {
-			return Session.get("expandedj"); 
-		}
 
-
+	Template.chat.irc_mode = function () {
+		return Session.get("irc_mode"); 
+	}
+	
+	Template.chat.talk_to_omnihal = function () {
+		return Session.get("talk_to_omnihal"); 
+	}
+	
 	Template.chat.events({
 		'click a#showchat': function (e, t) {
 				Session.set("showchat", true);	
+				Session.set("irc_mode", false);
+				$(".messages").removeClass( "expanded" )
+				$('.chat_form').removeClass( "irc" );
+				$('.divider').show();
+				
 				HandleMessage.ScrollDown();
+			},
+		'click a#irc_mode': function (e, t) {
+		
+				Session.set("irc_mode", true);
+				$(".messages").removeClass( "sized" ).addClass( "expanded" );
+				$('.chat_form').addClass( "irc" );
+				
 			},
 		'click a#hidechat': function (e, t) {
 				Session.set("showchat", false);
+				Session.set("irc_mode", false);
 				HandleMessage.ScrollDown();
 			},
 		'click a#onmiHal': function (e, t) {
-			console.log("omni"); 
-			var m = $("#onmiHal_container");
-			m.html("<div id='remove_omni'><hr> Ask omniHal ( <a>close</a> ): <input type='text' id='ask_omni'></div>").css({top: e.pageY+'px',left:e.pageX+'px'}).show().find('input').focus().end().find('a').css({cursor:'pointer'}).on('click', function(){$(this).parent().hide()});;
-			
+			Session.set("talk_to_omnihal", true); 	
+			$(".ask_omni").focus(); 		
 		},  
 		'click a#remove_omni': function (e, t) {
-				$("#"+e.target.id).remove()
-			}, 
+			Session.set("talk_to_omnihal", false); 
+		}, 
 		'keydown input#ask_omni' : function (e, t) {
     		if (e.which == 13) {
-	
-				element = t.find("#ask_omni");
-				
-					Meteor.call('fetchFromService', element.value, function(err, respJson) {
-						if(err) {
-							console.log("error occured on receiving data on server. ", err );
-						} else {
-							$(element).val(respJson.answer);
-							setTimeout(function() {
-								$(element).val('');
-							}, 1200);													
-						}
-						
-					});
+				element = t.find("#ask_omni");	
+				console.log(element.value); 
+				Meteor.call('fetchFromService', element.value, function(err, respJson) {
+					if(err) {
+						console.log("error occured on receiving data on server. ", err );
+						answer_element = t.find("#omni_answer");
+						$(answer_element).html("I'm asleep, please checkin later...");
+						Meteor.setTimeout(function() {
+							$(element).val('');
+						}, 4000);
+					} else {
+						answer_element = t.find("#omni_answer");
+						$(answer_element).html("").html(respJson.answer);
+						Meteor.setTimeout(function() {
+							$(element).val('');
+						}, 2000);													
+					}
+					
+				});
 				element.value = ""; 
 				return false;
 			} 
@@ -386,24 +489,12 @@ var insert_html_bad = '<div class="avatar_image removing" id=""> <div class="ins
 
 
 	Template.chat.rendered = function () { 
-		HandleMessage.ScrollDown(); 
+		Meteor.setTimeout(function(){
+			HandleMessage.ScrollDown() 
+			$("#message").focus(); 
+		}, 1000); 
+	
 	};  	
-
-	Template.header.events ({ 
-		'click a#expand_right': function(e, t) { 
-			$(".messages").removeClass( "sized" ).addClass( "expanded" );
-			$('.chat_form').addClass( "irc" );
-			Session.set("expanded", true);		
-		},
-		'click a#contract_left': function(e, t) { 
-			Session.set("expanded", false);
-			$(".messages").removeClass( "expanded" )
-			$('.chat_form').removeClass( "irc" );
-			$('.divider').show();
-			var chatDiv = $(".messages");
-			HandleMessage.ScrollDown();
-		}
-	});
 
 	Handlebars.registerHelper("prettifyDate", function(timestamp) {
 		formated = new Date(timestamp).toString();
@@ -424,9 +515,17 @@ var insert_html_bad = '<div class="avatar_image removing" id=""> <div class="ins
 					message_form = e.target;
 
 				if (message_form.value.trim()[0] == "/") {
-					console.log("interactive"); 
-					message_form.value = '';
-					return false
+				
+					var splited = message_form.value.split(" "); 
+					if (splited[0] == "/topic") {
+						var topic = ''; 
+							for (var j = 1; j < splited.length; j++) {
+								topic = topic + " " + splited[j]; 
+							}
+							Meta_setting.update({_id: "1"}, { $set: {topic: topic}}); 
+							message_form.value = '';
+					}
+					return  true; 
 				} 				
 
 				if(avatar) {										
@@ -438,9 +537,8 @@ var insert_html_bad = '<div class="avatar_image removing" id=""> <div class="ins
 				} else {
 					username = user.username;
 				}
-
+				
 				message = message_form.value
-				console.log(message, avatar_img, user._id, username, Date.now())
 
 				if (Settings.encryption) {
 					secret = Session.get("secret");
@@ -449,7 +547,7 @@ var insert_html_bad = '<div class="avatar_image removing" id=""> <div class="ins
 					var decrypted = decrypted.toString(CryptoJS.enc.Utf8);  
 				}
 			
-			 	if (message.length > 2 && $.trim(message) != '') {
+			 	if (message.length > 1 && $.trim(message) != '') {
 		    		Messages.insert({
 		      			name: username,
 						owner: user._id, 
@@ -457,9 +555,11 @@ var insert_html_bad = '<div class="avatar_image removing" id=""> <div class="ins
 						avatar_img: avatar_img, 
 		      			time: Date.now(),
 		    		});
-
-				HandleMessage.ScrollDown(); 
 				message_form.value = '';
+				Meteor.setTimeout(function(){
+					HandleMessage.ScrollDown() 
+					$("#message").focus(); 
+				}, 500); 
 
        	     	} else {
 					message_form.value = '';	
@@ -473,7 +573,7 @@ var insert_html_bad = '<div class="avatar_image removing" id=""> <div class="ins
 
 	});
 
-	// Avatar fucntion:
+	// Avatar function:
 	Meteor.subscribe("avatars");
 
 	Template.avatar_choose.avatars = [
@@ -493,9 +593,6 @@ var insert_html_bad = '<div class="avatar_image removing" id=""> <div class="ins
 		{name: "occupy-everything", type:"gif"},
 		{name: "systaime", type:"gif"},
 		{name: "dog", type:"gif"},
-
-
-
 	]
 
 
@@ -520,32 +617,14 @@ var insert_html_bad = '<div class="avatar_image removing" id=""> <div class="ins
 		return avatars; 
 	};
 
-
-	
-
-
 	Template.avatarList.events({
-	    'mouseover img.player' : function (e, t) {
+	    'click img.player' : function (e, t) {
 			var player = $("img#"+this.avatar_id);
-			player.addClass("player_big");
-			player.removeClass("player_size");
-			player.animate({
-     			marginLeft:'-100px',
-				width: '20px', 
-				height: '40px',
-  			}, 500);
-		}, 
-		'mouseout img.player' : function (e, t) {
-			var player = $("img#"+this.avatar_id);
-			player.removeClass("player_big");
-			player.addClass("player_size");
-				player.animate({
-     			marginLeft:'0px',
-				width: '100px',
-				height: '200px',
-  			}, 4000);
+			var event = new jQuery.Event("click");
+			event.pageX = e.clientX;
+			event.pageY = e.clientY;
+			$(".the_canvas").trigger(event);
 		}
-
 	});
 
 	Template.avatarForm.avatar = function () {
@@ -554,24 +633,20 @@ var insert_html_bad = '<div class="avatar_image removing" id=""> <div class="ins
 		return avatar; 
 	};
 
-
 	Template.avatarForm.editing = function () {
 		return Session.get("edit"); 
 	}
-
 
 	Template.avatarForm.events({
 		'click a#edit': function (e, t) {
 				Session.set("edit", true);	
 			},
-		'click button#change': function (e, t) {
-				
+		'click button#change': function (e, t) {			
 				var user = Meteor.user();						
 				var avatar = Avatars.findOne({avatar_id: user._id});				
 				var el_name = t.find("#avatar_name");
 				var el_message = t.find("#avatar_message");
 				var el_image = t.find("#avatar_image_input");
-				// console.log(el_name, el_message, el_image)
 				
 				if (avatar) {
 					Avatars.update({_id: avatar._id}, { $set: { avatar_name: el_name.value, avatar_message: el_message.value, avatar_img: el_image.value}}); 
@@ -596,8 +671,6 @@ var insert_html_bad = '<div class="avatar_image removing" id=""> <div class="ins
 
 	Template.admin_panel.events({
 		'click a.reset_gameboard': function (e, t) {
-			
-
 			Meteor.call('remove_gameboard', function(err, data) {
 				if (err) {
 					console.log(err);
@@ -663,8 +736,18 @@ if (Meteor.isServer) {
 	Meteor.publish("messages", function() {
 		return Messages.find();
 	});
+	Meteor.publish("meta_setting", function() {
+		return  Meta_setting.find({_id:"1"});
+	});
+	
 	Meteor.publish("gameboard", function() {
-		return Gameboard.find();
+	game = Gameboard.find({_id:"1"}).observe({
+		changed: function (id, fields) {
+		  return Gameboard.find({_id:"1"}); 
+		},
+	});
+  
+		return  Gameboard.find({_id:"1"});
 	});
 
 	// communication with omniHal API
@@ -687,19 +770,41 @@ if (Meteor.isServer) {
 			}
 		}, 
 
-		moveAi: function() {
+		moveAi: function(row, col, avatar_id, last_player_row, last_player_col, position_y_top, position_x_left) {
 			var the_game = Gameboard.findOne({});
 			var tileMap = the_game.board; 
+
+
+			// player 
+			var player_row = row; 
+			var player_col = col; 
+	
+			if  (Math.abs(player_row - last_player_row) < 6 && Math.abs(player_col - last_player_col) < 6 &&  typeof (tileMap[player_row][player_col]) != "string") {
+				if (tileMap[player_row][player_col] == 4) {
+					tileMap[player_row][player_col] = 5;
+				} else {
+					tileMap[player_row][player_col] = 2;
+				}
+				Avatars.update({_id:avatar_id}, { $set: 
+						{ 
+						avatar_top: position_y_top, 
+						avatar_left: position_x_left, 
+						last_player_row: player_row, 
+						last_player_col: player_col
+						}});
+			} 
+
+
 			// bad ai 
 			var bad_one_pos = the_game.the_bad; 
 			
-			row = bad_one_pos[0];
-			col = bad_one_pos[1]; 	
+			bad_row = bad_one_pos[0];
+			bad_col = bad_one_pos[1]; 	
 
 			rand_row = Math.floor((Math.random()*2)-1); 
 			rand_col = Math.floor((Math.random()*2)-1);
-			new_row = rand_row + row;
-			new_col = rand_col + col; 
+			new_row = rand_row + bad_row;
+			new_col = rand_col + bad_col; 
 
 			// bad ai revolve map 
 			if (new_row < 0) { new_row = 16 }; 
@@ -713,7 +818,7 @@ if (Meteor.isServer) {
 			}	
 
  			// check to see if bad trying to step on current player position 
-			console.log(tileMap[new_row][new_col]);  
+
 			if ( tileMap[new_row][new_col] == 1 || tileMap[new_row][new_col] == 2 ) {	
 				tileMap[new_row][new_col] = 4;
 				new_row = new_row +2; 
@@ -752,7 +857,7 @@ if (Meteor.isServer) {
 					if ( walk_value == 2 )  {
 						var can_move = true; 							
 					} else if (walk_value == 4) {
-						var can_move = true; 							
+						var can_hit = true; 							
 						new_good_row = new_good_row -2; 
 						new_good_col = new_good_col -2;			
 					}
@@ -761,11 +866,22 @@ if (Meteor.isServer) {
 
 			if (new_good_row <= 0 || new_good_row > 11) {new_good_row=1}
 			if (new_good_col <= 0 || new_good_col > 10) {new_good_col=1}
-			 			console.log(new_good_row, current_good_col)
+			 			
 			if (can_move) {
+				if (tileMap[new_good_row][new_good_col] == 7) {
+					tileMap[new_good_row][new_good_col] = 8;
+				} else if (tileMap[new_good_row][new_good_col] == 8) {
+					tileMap[new_good_row][new_good_col] = 3;
+				} else if (tileMap[new_good_row][new_good_col] == 3) {
+					tileMap[new_good_row][new_good_col] = 3;
+			
+				} else {
+					tileMap[new_good_row][new_good_col] = 7;
+					}
+				
+			} else if (can_hit) {
 				tileMap[new_good_row][new_good_col] = 3;
 				
-			} else {
 				new_good_row = current_good_row+1;
 				new_good_col = current_good_col+1; 
 			} 

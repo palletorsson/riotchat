@@ -6,16 +6,20 @@ html, body {
 	font-size: 100%;
 	margin: 0;
 	padding:0;
-	background-color:DarkSlateGray;  
+	background-color:white;  
+		overflow-y: hidden;
+   overflow-x: hidden; 
 }
-
-
+pers
 
 /* Menu */
 
 /* Menu: Edit Profil, You, Avatar */
-
-.edit_avatar_overlay {
+.talk {
+	position:absolute; 
+	z-index:1000; 
+}
+.edit_avatar_overlay  {
  	background: none repeat scroll 0 0 #FFFFFF;
     border: 1px solid #777777;
     border-radius: 4px;
@@ -24,11 +28,29 @@ html, body {
     font-size: 16px;
     margin: -8px -12px 0;
     padding: 8px 12px;
-    width: 400px;
+    width: 280px;
     z-index: 1000;
 	position: absolute;
 	top: -1px;
-	left: 300px;
+	left: 400px;
+}
+
+.onmi_overlay  {
+	position:fixed;
+	 border: 1px solid #777777;
+    border-radius: 4px;
+    box-shadow: 0 3px 6px 1px rgba(0, 0, 0, 0.3); 
+	 bottom: 0px; 
+    width: 500px;
+    right: 10px;
+    z-index:1100; 
+    background-color: #E8E8E8 ;
+    padding:4px; 
+    
+}
+
+.ask_omni {
+	width:400px; 
 }
 
 .edit_key_overlay {
@@ -76,7 +98,7 @@ html, body {
     z-index: 1000;
 	position: absolute;
 	width: 200px; 
-	right: 200px;
+	right: 0;
 }
 
 
@@ -99,7 +121,7 @@ html, body {
 
 
 .messages {
-	position: absolute;
+	position: fixed;
 	background: none repeat scroll 0 0 #FFFFFF;
     border: 1px solid #777777;
     border-radius: 4px;
@@ -109,12 +131,34 @@ html, body {
     padding: 8px 12px;
     width: 300px;
     z-index: 1056;
-	top: -1px;
-	left: -100px;
-	height: 640px;
+	top: 40px;
+	left: 0;
+	height: 700px;
     overflow:   auto;    
     bottom:     0;
 	background: rgba(200, 200, 200, 0.5);
+}
+
+.messages_head {
+	position:fixed; 
+	z-index:1057; 
+	background-color: white; 
+	top: 41px;
+	left: 10px;
+	width: 270px;
+    border: 1px solid #777777;
+    border-radius: 4px;
+    box-shadow: 0 3px 6px 4px rgba(0, 0, 0, 0.3);
+    padding: 8px 12px;
+  
+}
+
+.expanded .messages_head {
+	background-color: black; 
+}
+
+.chat_choose {
+	z-index:1057; 
 }
 
 .hide_chat {
@@ -214,9 +258,25 @@ html, body {
 	padding-left: 20px; 
 	padding-right: 20px; 
 	left:0; 
+	top: 0;
 
 }
 
+.expanded .back_to_webchat{
+	position:fixed; 
+	top: 10px;
+	left: 0; 
+	color:black; 
+	font-size:14px;  
+	z-index:1056; 
+	background-color: black; 
+	width: 240px;
+    border: 1px solid #777777;
+    border-radius: 4px;
+    box-shadow: 0 3px 6px 4px rgba(0, 0, 0, 0.3);
+    padding: 8px 12px;
+	font-size:14px;
+}
 .expanded .chat_message {
 	display:inline; 
 	background-color: #000;
@@ -266,14 +326,16 @@ html, body {
 
 .gameboard {
 	position:fixed; 
-	top:29;
 	z-index: 10000;
 
 }
+
 .the_canvas {
   	position: absolute;
   	top: 98px;
 	z-index: 1;
+    border-radius: 2px;
+    box-shadow: 0 6px 12px 2px rgba(0, 0, 0, 0.7);
 }
 
 .irc {
@@ -282,30 +344,20 @@ html, body {
 	width: 100%;
 }
 
-.under_ground {
-	position: relative;
-	background-color:pink; 
-	-moz-border-radius-bottomright:  600px 650px;
-	border-bottom-right-radius: 600px 650px;
-	top:20px; 
-	margin-top:22px;
-	background-image:url("img/mRul8.png");
-}
 
 .perspective_grid {
-    position: relative; 
+    position: absolute; 
     overflow: hidden;
-	min-height: 710px;
-	max-height: 900px; 
+	min-height: 800px;
+	max-height: 1000px; 
 	background-image:url("img/space_4.png");
 	background-size:1400px;
-
-	padding-top:40px;	
-    overflow-y: hidden;
-    overflow-x: hidden; 
-	width:1400px; 
+	overflow-y: hidden;
+   overflow-x: hidden; 
+	width:1600px; 
 	margin-left: auto ;
 	margin-right: auto ;
+	top: 36px;
 }
 
 .player {
@@ -317,6 +369,21 @@ html, body {
 	transform:  rotate(35deg) skew(35deg, -35deg) scale(0.65, 1.23);
 	z-index:10;
 }
+
+.score_board {
+	position: fixed;
+	top: 160px;
+	right: 30px; 
+	-webkit-transform: rotate(56deg) skew(56deg, -35deg) scale(0.85, 1.23);
+	-mozkit-transform: rotate(56deg) skew(56deg, -35deg) scale(0.85, 1.23);
+	-o-transform:  rotate(56deg) skew(56deg, -35deg) scale(0.65, 1.23);
+	-ms-transform:  rotate(56deg) skew(56deg, -35deg) scale(0.65, 1.23);
+	transform:  rotate(56deg) skew(56deg, -35deg) scale(0.65, 1.23);
+	z-index:1000;
+	font-size: 30px;
+	color: pink;  
+}
+
 .insert_npc {
 	position: absolute;
 	z-index:10;
@@ -339,7 +406,10 @@ html, body {
 
 .under {
 	font-size: 12px;
-	z-index:200;  
+	z-index:200; 
+	overflow-y: hidden;
+   overflow-x: hidden; 
+	 
 }
 
 
@@ -360,6 +430,9 @@ html, body {
 	left:600px; 
 	top:300px; 
 	z-index:100;
+	overflow-y: hidden;
+   overflow-x: hidden; 
+	
  
 }
 .c_right {
