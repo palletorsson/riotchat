@@ -1,6 +1,9 @@
 <head>
-	<!-- <script src="http://crypto-js.googlecode.com/svn/tags/3.1.2/build/rollups/md5.js"></script>
-	<script src="http://crypto-js.googlecode.com/svn/tags/3.1.2/build/rollups/aes.js"></script>
+	
+
+	
+	<script src="/js/md5.js"></script>
+	<script src="/js/aes.js"></script>
     <script> var JsonFormatter = {
         stringify: function (cipherParams) {
             // create json object with ciphertext
@@ -17,12 +20,13 @@
             }
 
             // stringify json object
-            return JSON.stringify(jsonObj);
+            return jsonObj;
         },
 
         parse: function (jsonStr) {
             // parse json string
-            var jsonObj = JSON.parse(jsonStr);
+            var jsonObj = jsonStr;
+			
 
             // extract ciphertext from json object, and create cipher params object
             var cipherParams = CryptoJS.lib.CipherParams.create({
@@ -40,7 +44,7 @@
             return cipherParams;
         }
     };
-	</script> -->
+	</script> 
 
 	<title>Riot chat</title>
 </head>
@@ -266,7 +270,7 @@
 						{{#if currentUser}}
 							<span class="remove"></span>
 						{{/if}}
-				  	<span class="chat_message"> {{message}} </span> 
+				  	<span class="chat_message"> {{{message}}} </span> 
 				</span> 
         	</div>			
 	</div>
@@ -303,7 +307,7 @@
 </div>
 <div class="center">
 	<div class="the_canvas">
-		<canvas id="myCanvas" width="1400" height="700" style="border: 1px solid black"></canvas>
+		<canvas id="myCanvas" width="1600" height="800"></canvas>
 	</div>
 
 	

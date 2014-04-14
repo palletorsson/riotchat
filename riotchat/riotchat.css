@@ -6,11 +6,11 @@ html, body {
 	font-size: 100%;
 	margin: 0;
 	padding:0;
-	background-color:white;  
-		overflow-y: hidden;
-   overflow-x: hidden; 
+	background-color:#150a1a;  
+	overflow-y: hidden;
+   	overflow-x: hidden; 
 }
-pers
+
 
 /* Menu */
 
@@ -332,10 +332,11 @@ pers
 
 .the_canvas {
   	position: absolute;
-  	top: 98px;
+  	top: 100px;
+	left: 0; 
 	z-index: 1;
     border-radius: 2px;
-    box-shadow: 0 6px 12px 2px rgba(0, 0, 0, 0.7);
+    box-shadow: 2px 16px 16px 4px rgba(0, 0, 0, 0.7);
 }
 
 .irc {
@@ -350,8 +351,8 @@ pers
     overflow: hidden;
 	min-height: 800px;
 	max-height: 1000px; 
-	background-image:url("img/space_4.png");
-	background-size:1400px;
+	background-image:url("img/space_5.jpg");
+	background-size:100%;
 	overflow-y: hidden;
    overflow-x: hidden; 
 	width:1600px; 

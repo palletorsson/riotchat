@@ -22,8 +22,9 @@ Gameboard.allow({
 
 Messages.allow({
 	insert: function (userid, doc) {
-		console.log(doc.message.length < 500)
-		return (userid && doc.message.length < 500); 
+		console.log(doc.message)
+		//return (userid && doc.message.length < 500); 
+		return true; 
 	},
 	update: function () {
 		return false; 
@@ -68,27 +69,31 @@ if (Meteor.isClient) {
 	Meteor.startup(function () {
 
 		// Settings
-		Settings.encryption = false;
+		Settings.encryption = true;
 		Settings.create_game = false; 
 		Settings.remove_game = false;
 
 		if (Settings.create_game) {
-			Meteor.call('create_gameboard')
+			Meteor.call('create_gameboard');
 		}
 		if (Settings.remove_game) {
-			Meteor.call('remove_gameboard')
+			Meteor.call('remove_gameboard');
 		}
 
 		// Game
-		Game.gridOffsetY = 70;
-		Game.gridOffsetX = 20;
+		Game.gridOffsetY = 100;
+		Game.gridOffsetX = 300;
 
+		Game.playerOffsetY = 250;
+		Game.playerOffsetX = 80;
+
+		Game.network = {}
 		Game.canvas = document.getElementById('myCanvas');
 		Game.c = Game.canvas.getContext('2d');
 		
 		Game.topBoundary = Game.gridOffsetY;
 		Game.buttomBoundary = Game.canvas.height / 2 + 500;
-		Game.leftBoundary = 400;
+		Game.leftBoundary = 100;
 		Game.rightBoundary = Game.canvas.width;
 
 		Game.grid = {
@@ -98,6 +103,9 @@ if (Meteor.isClient) {
  
 		Game.tile = new Image();
 		Game.tile.src = "/img/under.png";
+
+		Game.space = new Image();
+		Game.space.src = "/img/space_5.jpg";
 
 		Game.dirt = new Image();
 		Game.dirt.src = "/img/dirt.png";
@@ -109,7 +117,8 @@ if (Meteor.isClient) {
 		Game.green_current.src = "/img/green_current.png";		
 
 		Game.copy_me = new Image();
-		Game.copy_me.src = "/img/copytile_iso.png";
+		Game.copy_me.src = "/img/copytile_iso_.png";
+
 		Game.copy_me_avatar = "/img/droid-evanroth-occupy.gif"
 
 		Game.copy_me_1 = new Image();
@@ -124,13 +133,6 @@ if (Meteor.isClient) {
  		Game.black_2 = new Image();
 		Game.black_2.src = "/img/dark_part.png";
 		
- 		Game.black_current = new Image();
-		Game.black_current.src = "/img/black_current.png";
-		Game.black_bad_avatar = "/img/servilliance.png"
-
-
-		Game.red = new Image();
-		Game.red.src = "/img/red.png";
 
 		Game.resetTileCount = function() {
 			Game.tiles_green = 0; 
@@ -142,12 +144,16 @@ if (Meteor.isClient) {
 		Game.resetTileCount(); 
 
 		Game.draw = function(tileMap) {
-			//console.log(tileMap)
-			//var the_game = Gameboard.findOne({});	
+		
+		
+			//Game.c.fillStyle = '#000000'; 
+       		//Game.c.fillRect(0, 0, Game.c.width, Game.c.height);
 
-			// tileMap = the_game.board;
-				   	
-			Game.c.clearRect (0, 0, Game.canvas.width, Game.canvas.height);
+		
+							   	
+			Game.c.clearRect (0, 0, Game.c.width, Game.c.height);
+			//Game.c.drawImage(Game.space, 0, 0, Game.c.width, Game.c.height);
+			var i = 0; 
 			for (var row = 0; row < Game.grid.width; row++) {
 				for (var col = 0; col < Game.grid.height; col++) {
 
@@ -163,11 +169,6 @@ if (Meteor.isClient) {
 					    3 is good ia 
 						4 is bad ia    			
 						else is untouched 
-
-
-
-var insert_html_bad = '<div class="avatar_image removing" id=""> <div class="insert_npc" style="position:absolute; top:'+Math.round(tilePositionX)+'px; left:'+Math.round(tilePositionY)+'px"></div> <img src="'+Game.black_bad_avatar+'" alt="bad_" class="insert_npc" style="z-index: 4; height: 100px; width:100px; top:'+Math.round(tilePositionX)+'px; left:'+Math.round(tilePositionY)+'px"></div>'; 
-
 					*/
 				
 							
@@ -179,22 +180,26 @@ var insert_html_bad = '<div class="avatar_image removing" id=""> <div class="ins
 						} else if ( tileMap[row][col] == 2 ) {
 							Game.tiles_green = Game.tiles_green + 1; 
 							Game.c.drawImage(Game.green_current, Math.round(tilePositionX), Math.round(tilePositionY), Game.tile.width, Game.tile.height);	
-		
+							
 						} else if ( tileMap[row][col] == 3 ) {
 							Game.tiles_copy_me = Game.tiles_copy_me + 1; 
 							Game.c.drawImage(Game.copy_me, Math.round(tilePositionX), Math.round(tilePositionY), Game.tile.width, Game.tile.height);	
-							
-							// var insert_html_good = '<div class="avatar_image removing" id=""> <div class="npc" style="position:absolute; top:'+Math.round(tilePositionY)+'px; left:'+Math.round(tilePositionX)+'px">omni</div> <img src="'+Game.copy_me_avatar+'" alt="bad_" class="npc" style="z-index: 4; height: 200px; top:'+Math.round(tilePositionY-100)+'px; left:'+Math.round(tilePositionX-00)+'px" /> </div>'; 		
-						} else if ( tileMap[row][col] == 7 ) {
+ 							
+    					} else if ( tileMap[row][col] == 7 ) {
 							Game.tiles_copy_me = Game.tiles_copy_me + 1; 
 							Game.c.drawImage(Game.copy_me_1, Math.round(tilePositionX), Math.round(tilePositionY), Game.tile.width, Game.tile.height);	
-						
+							//var newItem = "item" + i;
+							//Game.network[newItem] =  { point: row+"_"+col, "positionX": Math.round(tilePositionX), "positionY":Math.round(tilePositionY) } ;
 						} else if ( tileMap[row][col] == 8 ) {
 							Game.tiles_copy_me = Game.tiles_copy_me + 1; 
-							Game.c.drawImage(Game.copy_me_2, Math.round(tilePositionX), Math.round(tilePositionY), Game.tile.width, Game.tile.height);	
-							
+							Game.c.drawImage(Game.copy_me_2, Math.round(tilePositionX), Math.round(tilePositionY), Game.tile.width, Game.tile.height);
+							//var newItem = "item" + i;
+							//Game.network[newItem] =  { point: row+"_"+col, "positionX": Math.round(tilePositionX), "positionY":Math.round(tilePositionY) } ; 
 						} else if ( tileMap[row][col] == 4 ) {
 							Game.c.drawImage(Game.black, Math.round(tilePositionX), Math.round(tilePositionY), Game.tile.width, Game.tile.height);	
+var newItem = "item" + i;	
+							Game.network[newItem] =  { "positionX": Math.round(tilePositionX)+32, "positionY":Math.round(tilePositionY)+32  }; 
+					
 							Game.tiles_bad = Game.tiles_bad + 1; 					
 						} else if ( tileMap[row][col] == 5 ) {
 							Game.c.drawImage(Game.black_2, Math.round(tilePositionX), Math.round(tilePositionY), Game.tile.width, Game.tile.height);	
@@ -202,6 +207,7 @@ var insert_html_bad = '<div class="avatar_image removing" id=""> <div class="ins
 							Game.tiles_bad = Game.tiles_bad + 1; 
 						} else if ( typeof (tileMap[row][col]) == "string"  ) {
 							Game.c.drawImage(Game.green_current, Math.round(tilePositionX), Math.round(tilePositionY), Game.tile.width, Game.tile.height);	
+							Game.tiles_green = Game.tiles_green + 1; 
 						} else  {
 							Game.c.drawImage(Game.red, Math.round(tilePositionX), Math.round(tilePositionY), Game.tile.width, Game.tile.height);	
 						}
@@ -209,14 +215,35 @@ var insert_html_bad = '<div class="avatar_image removing" id=""> <div class="ins
 						Game.c.drawImage(Game.tile, Math.round(tilePositionX), Math.round(tilePositionY), Game.tile.width, Game.tile.height);	
 						Game.tiles_natural = Game.tiles_natural + 1; 
 					}
+					i = i + 1; 
 				}
 			}
 
-			Game.tiles_bad = Game.tiles_bad - 110; 
-		
+
+			//console.log(Game.network)
+
+
+			var	positionX_previous = 300; 
+			var positionY_previous = 300;
+			Game.c.lineWidth = 2;
+			Game.c.strokeStyle="brown"; 
+			$.each(Game.network, function( index, value ) {
+
+				//console.log( index + ": " + value.positionX + ": " + value.positionY + ": " +positionX_previous +": " + positionY_previous );
+				//if (value.positionX < 800 && value.positionY < 800) {
+					Game.c.beginPath();
+					Game.c.moveTo(positionX_previous, positionY_previous);
+					Game.c.lineTo(value.positionX, value.positionX);
+					
+					Game.c.stroke()
+					positionX_previous = value.positionX; 
+					positionY_previous = value.positionY;
+	//			}
+			});
+
+			Game.network = {}
 			var all = Game.tiles_natural + Game.tiles_bad + Game.tiles_green; 
-			// var the_other = (Game.tiles_bad/all) * 100; 
-			var good = ((Game.tiles_green+Game.tiles_natural)/all) * 100;
+			var good = (Game.tiles_green / all) * 100;
 			$(".score_board").html("Datalove: "+good.toFixed(2)+ "%"); 
 			Game.tiles_natural = 0; Game.tiles_bad = 0; Game.tiles_green = 0; 
 		}
@@ -228,7 +255,14 @@ var insert_html_bad = '<div class="avatar_image removing" id=""> <div class="ins
 			chatDiv.scrollTop(chatDiv.prop("scrollHeight"));
 		}; 		
 		
-		
+	Game.urlify = function(text) {
+    	var urlRegex = /(https?:\/\/[^\s]+)/g;
+		return text.replace(urlRegex, function(url) {
+		    return '<a href="' + url + '"  target="_blank">' + url + '</a>';
+		})
+
+	}; 
+
 		Meteor.setTimeout(function(){
 			var is_settings = Meta_setting.findOne({ _id: "1"});
 			if (!is_settings) {
@@ -237,9 +271,21 @@ var insert_html_bad = '<div class="avatar_image removing" id=""> <div class="ins
 		}, 3000);
 		Session.set("showchat", true); 			
 		
+		HandleMessage.helpEnc = function(message) {
+			alert(message);	console.log(message)
+            return message.ciphertext.toString(CryptoJS.enc.Base64);
+	
+            
+        }
+
+        HandleMessage.helpDec = function (message) {
+	alert(CryptoJS.enc.Base64(message))
+            return CryptoJS.enc.Base64(message);
+      	}
+
 	});
 
-
+ 
 	// check if user has avatar 
 	Deps.autorun(function () {
 	  if (Meteor.userId()) {
@@ -303,14 +349,9 @@ var insert_html_bad = '<div class="avatar_image removing" id=""> <div class="ins
 						var user = Meteor.user();
 						var avatar = Avatars.findOne({avatar_id: user._id});
 						if(avatar) {
-			
-						//if (!tileMap[avatar.last_player_row] || tileMap[avatar.last_player_row] === 'undefined') {
-							//	tileMap[avatar.last_player_row] = [];
-							//}
-
-						//tileMap[last_row][last_col] = 2;	
 
 						// Take into account the offset on the X axis caused by centering the grid horizontally
+
 						Game.gridOffsetX = (Game.canvas.width / 2) - (Game.tile.width / 2);
 
 						var cX = e.clientX || e.pageX; 
@@ -329,22 +370,19 @@ var insert_html_bad = '<div class="avatar_image removing" id=""> <div class="ins
 						if (row >= 0 && 
 							col >= 0 && 
 							row <= Game.grid.width &&
-							col <= Game.grid.height) {
+							col <= Game.grid.height) {			
+							Game.c.width  = $( window ).width();
+							Game.c.height = $( window ).height()-100;
 
-		//					if (!tileMap[row] || tileMap[row] === 'undefined') {
-			//					tileMap[row] = [];
-				//			}
-
-					//		tileMap[row][col] = 1;	
-						
+			
 
 							if (Game.tiles_bad < 10) {
-	//							tileMap[7][7] = 4; 
+							//	tileMap[7][7] = 4; 
 							}
 
 						
 							if (Game.tiles_copyme == 0) {
-//								tileMap[1][1] = 3;  
+							//	tileMap[1][1] = 3;  
 							}		
 
 							Game.resetTileCount(); 
@@ -353,8 +391,10 @@ var insert_html_bad = '<div class="avatar_image removing" id=""> <div class="ins
 		 					last_player_row = avatar.last_player_row || 4; 
  							last_player_col = avatar.last_player_col || 4; 
 							
-							var position_y_top = e.pageY-240;
-							var position_x_left =  e.pageX-100;							
+							var position_y_top = e.pageY-Game.playerOffsetY; 
+							var position_x_left =  e.pageX-Game.playerOffsetX;			 
+		
+						
 
 							Meteor.call('moveAi', row, col, avatar._id, last_player_row, last_player_col, position_y_top, position_x_left, function(err, data) {
 								if (err) {
@@ -390,21 +430,40 @@ var insert_html_bad = '<div class="avatar_image removing" id=""> <div class="ins
 	
 	Template.messages.messages = function () {	
 		if (Settings.encryption) {
-			messages = Messages.find({}, {sort: {time : 1} }).fetch();
-			secret = Session.get("secret");
-			secret = "copyriot";
-			messages.forEach( function(messages) { 
-				console.log(messages.message);    
-				var decrypted = CryptoJS.AES.decrypt(messages.message, secret);
-				console.log(decrypt); 
-	   			messages.message = decrypted.toString(CryptoJS.enc.Utf8); 
-			});
-		} else {
+
 			var items = Messages.find({}, {sort: {time : -1}, limit: 100 }).fetch();
-			items.sort(function(a,b) { return parseInt(a.time) - parseInt(b.time) } );
+			items = items.sort(function(a,b) { return parseInt(a.time) - parseInt(b.time) } );
+			
+			secret = "copyriot";
+
+			items.forEach( function(item) { 
+ 				try {
+
+                   message = {ct : item.message, iv: item.iv, s:item.s}
+					message = JsonFormatter.parse(message)
+					var decrypted = CryptoJS.AES.decrypt(message, secret, { format: JsonFormatter });
+					console.log(decrypted); 
+					var new_message = decrypted.toString(CryptoJS.enc.Utf8)
+ 					console.log(new_message); 
+					item.message = new_message;
+                } catch (err) {
+                   // console.log("Failure in toString(CryptoJS.enc.Utf8): " + err.message);
+                }
+	   			
+			});
+
+			items.forEach(function(item) {
+				// item.message = Game.urlify(item.message); 
+			});
 			return items; 
 
-    		
+		} else {
+			var items = Messages.find({}, {sort: {time : -1}, limit: 100 }).fetch();
+			items = items.sort(function(a,b) { return parseInt(a.time) - parseInt(b.time) } );
+			items.forEach(function(item) {
+				item.message = Game.urlify(item.message); 
+			});
+			return items; 
 		}
   		return messages;
 	};
@@ -528,30 +587,46 @@ var insert_html_bad = '<div class="avatar_image removing" id=""> <div class="ins
 					return  true; 
 				} 				
 
-				if(avatar) {										
+
+
+
+				if(avatar) {
+															
 					avatar_img = avatar.avatar_img;
 					username = avatar.avatar_name;	
-					if (username == '') {
-						username = user.username;
-					}								
+					if (username.trim() == '') {
+						 
+						username = user.profile.name || "_nano";
+					}
+					if (avatar_img.trim() == '') {
+						avatar_img = "default_avatar.png";
+					}									
 				} else {
 					username = user.username;
 				}
 				
 				message = message_form.value
+				
+
+				message = message.replace(/<(?:.|\n)*?>/gm, '');
+
+				
 
 				if (Settings.encryption) {
-					secret = Session.get("secret");
-	 				var encrypted =  CryptoJS.AES.encrypt(message, secret);
-	   				var decrypted = CryptoJS.AES.decrypt(encrypted, secret);
-					var decrypted = decrypted.toString(CryptoJS.enc.Utf8);  
+					secret = "copyriot";
+ 				   var encrypted = CryptoJS.AES.encrypt(message, secret,  { format: JsonFormatter });
+					
+					var json = JsonFormatter.stringify(encrypted)
+
 				}
 			
 			 	if (message.length > 1 && $.trim(message) != '') {
 		    		Messages.insert({
 		      			name: username,
-						owner: user._id, 
-		      			message: message,
+						owner: user._id,
+						s: json.s, 
+						iv: json.iv,
+		      			message: json.ct,
 						avatar_img: avatar_img, 
 		      			time: Date.now(),
 		    		});
