@@ -250,25 +250,34 @@ var newItem = "item" + i;
 		Game.init_interval = true;
 
  		//Message
+		
 		HandleMessage.ScrollDown = function() {
 			var chatDiv = $(".messages");
 			chatDiv.scrollTop(chatDiv.prop("scrollHeight"));
 		}; 		
 		
-	Game.urlify = function(text) {
-    	var urlRegex = /(https?:\/\/[^\s]+)/g;
-		return text.replace(urlRegex, function(url) {
-		    return '<a href="' + url + '"  target="_blank">' + url + '</a>';
-		})
+		Game.urlify = function(text) {
+			var urlRegex = /(https?:\/\/[^\s]+)/g;
+			return text.replace(urlRegex, function(url) {
+				return '<a href="' + url + '"  target="_blank">' + url + '</a>';
+			})
 
-	}; 
+		}; 
+
+
+ 		
+			//key = Session.get("visable_secret"); 
+		//	console.log(key); 
 
 		Meteor.setTimeout(function(){
 			var is_settings = Meta_setting.findOne({ _id: "1"});
 			if (!is_settings) {
 				Meta_setting.insert({ _id: "1", topic:'piracy is fun', channel: "riotchat" });
 			}
+
+	
 		}, 3000);
+
 		Session.set("showchat", true); 			
 		
 		HandleMessage.helpEnc = function(message) {
@@ -279,10 +288,22 @@ var newItem = "item" + i;
         }
 
         HandleMessage.helpDec = function (message) {
-	alert(CryptoJS.enc.Base64(message))
+		alert(CryptoJS.enc.Base64(message))
             return CryptoJS.enc.Base64(message);
       	}
 
+		Meteor.call('GetSecret', function(err, data) {
+			if (err) {
+					console.log(err);
+					Session.set("visable_secret", false); 
+				} else {
+	               	var secret = {ct: data.ct, iv: data.iv, s:data.s}
+					secret = JsonFormatter.parse(secret)
+					secret = CryptoJS.AES.decrypt(secret, "copyriot", { format: JsonFormatter });
+					var the_secret = secret.toString(CryptoJS.enc.Utf8);
+					Session.set("visable_secret", the_secret); 
+				}
+			});
 	});
 
  
@@ -297,6 +318,8 @@ var newItem = "item" + i;
 		} else {
 			Session.set("avatar", false);
 		}
+	
+
 	  }
 	});
 
@@ -372,9 +395,7 @@ var newItem = "item" + i;
 							row <= Game.grid.width &&
 							col <= Game.grid.height) {			
 							Game.c.width  = $( window ).width();
-							Game.c.height = $( window ).height()-100;
-
-			
+							Game.c.height = $( window ).height()-100;		
 
 							if (Game.tiles_bad < 10) {
 							//	tileMap[7][7] = 4; 
@@ -427,24 +448,27 @@ var newItem = "item" + i;
 	};
 	
 	Meteor.subscribe("messages");
-	
+
+	Template.messages.rendered = function () {
+ 		if (Meteor.userId()) {
+			
+		}
+	}
+
 	Template.messages.messages = function () {	
 		if (Settings.encryption) {
-
 			var items = Messages.find({}, {sort: {time : -1}, limit: 100 }).fetch();
-			items = items.sort(function(a,b) { return parseInt(a.time) - parseInt(b.time) } );
-			
-			secret = "copyriot";
-
+			items = items.sort(function(a,b) { return parseInt(a.time) - parseInt(b.time) } );		
+			var take_secret = Session.get("visable_secret");
 			items.forEach( function(item) { 
  				try {
 
-                   message = {ct : item.message, iv: item.iv, s:item.s}
+                    message = {ct : item.message, iv: item.iv, s:item.s}
 					message = JsonFormatter.parse(message)
-					var decrypted = CryptoJS.AES.decrypt(message, secret, { format: JsonFormatter });
-					console.log(decrypted); 
+					var decrypted = CryptoJS.AES.decrypt(message, take_secret, { format: JsonFormatter });
+					// console.log(decrypted); 
 					var new_message = decrypted.toString(CryptoJS.enc.Utf8)
- 					console.log(new_message); 
+ 					// console.log(new_message); 
 					item.message = new_message;
                 } catch (err) {
                    // console.log("Failure in toString(CryptoJS.enc.Utf8): " + err.message);
@@ -613,11 +637,10 @@ var newItem = "item" + i;
 				
 
 				if (Settings.encryption) {
-					secret = "copyriot";
- 				   var encrypted = CryptoJS.AES.encrypt(message, secret,  { format: JsonFormatter });
-					
+					var make_secret = Session.get("visable_secret");
+ 				   	var encrypted = CryptoJS.AES.encrypt(message, make_secret, { format: JsonFormatter });
 					var json = JsonFormatter.stringify(encrypted)
-
+					 
 				}
 			
 			 	if (message.length > 1 && $.trim(message) != '') {
@@ -828,7 +851,7 @@ if (Meteor.isServer) {
 	// communication with omniHal API
 	Meteor.methods({
 		fetchFromService: function(question) {
-			var url = "http://127.0.0.1:8000/answers/?question="+question;
+			var url = "http://artliberated.org/answers/?question="+question;
 			console.log(url); 
 			//synchronous GET
 			var result = Meteor.http.get(url, {timeout:30000});
@@ -844,6 +867,19 @@ if (Meteor.isServer) {
 				return "I'm sleeping.";
 			}
 		}, 
+		GetSecret: function() {
+			var url = "http://127.0.0.1:8000/unsecure/";
+			//synchronous GET
+			var result = Meteor.http.get(url, {timeout:30000});
+			if(result.statusCode==200) {
+				var respJson = JSON.parse(result.content);
+				return respJson;
+				
+			} else {
+				console.log("Response issue: ", result.statusCode);
+				throw new Meteor.Error(result.statusCode, errorJson.error);
+			}
+		},
 
 		moveAi: function(row, col, avatar_id, last_player_row, last_player_col, position_y_top, position_x_left) {
 			var the_game = Gameboard.findOne({});
@@ -913,9 +949,9 @@ if (Meteor.isServer) {
 			var new_good_row = rand_row + current_good_row;
 			var new_good_col = rand_col + current_good_col; 
 
-
-			if (new_good_row < 0 || new_good_row > 11) {new_good_row=1}
-			if (new_good_col < 0 || new_good_col > 10) {new_good_col=1}
+			console.log(new_good_row, new_good_col);
+			if (new_good_row < 0 || new_good_row > 14) {new_good_row=1}
+			if (new_good_col < 0 || new_good_col > 14) {new_good_col=1}
 			var new_good_col
 			if (!tileMap[new_good_row] || tileMap[new_good_row] === 'undefined') {
 				tileMap[new_good_row] = [];
@@ -939,8 +975,8 @@ if (Meteor.isServer) {
 				}
 			} 
 
-			if (new_good_row <= 0 || new_good_row > 11) {new_good_row=1}
-			if (new_good_col <= 0 || new_good_col > 10) {new_good_col=1}
+			if (new_good_row <= 0 || new_good_row > 16) {new_good_row=1}
+			if (new_good_col <= 0 || new_good_col > 16) {new_good_col=1}
 			 			
 			if (can_move) {
 				if (tileMap[new_good_row][new_good_col] == 7) {
