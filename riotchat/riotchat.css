@@ -20,16 +20,16 @@ html, body {
 	z-index:1000; 
 }
 .edit_avatar_overlay  {
- 	background: none repeat scroll 0 0 #FFFFFF;
-    border: 1px solid #777777;
-    border-radius: 4px;
-    box-shadow: 0 3px 6px 1px rgba(0, 0, 0, 0.3);
-    color: #333333;
-    font-size: 16px;
-    margin: -8px -12px 0;
-    padding: 8px 12px;
-    width: 280px;
-    z-index: 1000;
+	background: none repeat scroll 0 0 #FFFFFF;
+	border: 1px solid #777777;
+	border-radius: 4px;
+	box-shadow: 0 3px 6px 1px rgba(0, 0, 0, 0.3);
+	color: #333333;
+	font-size: 16px;
+	margin: -8px -12px 0;
+	padding: 8px 12px;
+	width: 280px;
+	z-index: 1000;
 	position: absolute;
 	top: -1px;
 	left: 400px;
@@ -37,33 +37,32 @@ html, body {
 
 .onmi_overlay  {
 	position:fixed;
-	 border: 1px solid #777777;
-    border-radius: 4px;
-    box-shadow: 0 3px 6px 1px rgba(0, 0, 0, 0.3); 
-	 bottom: 0px; 
-    width: 500px;
-    right: 10px;
-    z-index:1100; 
-    background-color: #E8E8E8 ;
-    padding:4px; 
-    
+	border: 1px solid #777777;
+	border-radius: 4px;
+	box-shadow: 0 3px 6px 1px rgba(0, 0, 0, 0.3); 
+	top: 60px; 
+	width: 310px;
+	right: 0px;
+	z-index:1100; 
+	background-color: #E8E8E8 ;
+	padding:4px; 
 }
 
 .ask_omni {
-	width:400px; 
+	width:200px; 
 }
 
 .edit_key_overlay {
- 	background: none repeat scroll 0 0 #FFFFFF;
-    border: 1px solid #777777;
-    border-radius: 4px;
-    box-shadow: 0 3px 6px 1px rgba(0, 0, 0, 0.3);
-    color: #333333;
-    font-size: 16px;
-    margin: -8px -12px 0;
-    padding: 8px 12px;
-    width: 200px;
-    z-index: 2000;
+	background: none repeat scroll 0 0 #FFFFFF;
+	border: 1px solid #777777;
+	border-radius: 4px;
+	box-shadow: 0 3px 6px 1px rgba(0, 0, 0, 0.3);
+	color: #333333;
+	font-size: 16px;
+	margin: -8px -12px 0;
+	padding: 8px 12px;
+	width: 200px;
+	z-index: 2000;
 	position: absolute;
 	top: -1px;
 	left: 140px;
@@ -86,16 +85,16 @@ html, body {
 /* Menu: Login, Logout */
 
 #login-buttons {
- 	background: none repeat scroll 0 0 #FFFFFF;
-    border: 1px solid #777777;
-    border-radius: 4px;
-    box-shadow: 0 3px 6px 1px rgba(0, 0, 0, 0.3);
-    color: #333333;
-    font-size: 16px;
-    margin: -8px -12px 0;
-    padding: 8px 12px;
-    width: 400px;
-    z-index: 1000;
+	background: none repeat scroll 0 0 #FFFFFF;
+	border: 1px solid #777777;
+	border-radius: 4px;
+	box-shadow: 0 3px 6px 1px rgba(0, 0, 0, 0.3);
+	color: #333333;
+	font-size: 16px;
+	margin: -8px -12px 0;
+	padding: 8px 12px;
+	width: 400px;
+	z-index: 1000;
 	position: absolute;
 	width: 200px; 
 	right: 0;
@@ -106,16 +105,16 @@ html, body {
 
 .the_chat {
 	position: relative;
-    border: 1px solid #999;
-    margin: 0 5px;
-    display: inline-block;
-    vertical-align: bottom;
-    overflow: hidden;
-    bottom: 0px;
-    transition: 1s; 
+	border: 1px solid #999;
+	margin: 0 5px;
+	display: inline-block;
+	vertical-align: bottom;
+	overflow: hidden;
+	bottom: 0px;
+	transition: 1s; 
 	overflow: none;
-    width:      100%;
-    height:     500px;
+	width:      100%;
+	height:     500px;
 	background: rgba(0,0,0,0.5)
 }
 
@@ -123,19 +122,22 @@ html, body {
 .messages {
 	position: fixed;
 	background: none repeat scroll 0 0 #FFFFFF;
-    border: 1px solid #777777;
-    border-radius: 4px;
-    box-shadow: 0 3px 6px 1px rgba(0, 0, 0, 0.3);
-    color: #333333;
-    font-size: 16px;
-    padding: 8px 12px;
-    width: 300px;
-    z-index: 1056;
+	border: 1px solid #777777;
+	border-radius: 4px;
+	box-shadow: 0 3px 6px 1px rgba(0, 0, 0, 0.3);
+	color: #333333;
+	font-size: 16px;
+	padding-top: 8px;
+	padding-right: 8px;
+	padding-bottom: 0px;
+	padding-left: 12px;
+	width: 300px;
+	z-index: 1056;
 	top: 40px;
 	left: 0;
-	height: 700px;
-    overflow:   auto;    
-    bottom:     0;
+	height: 90%;
+	overflow: auto;    
+	bottom: 0;
 	background: rgba(200, 200, 200, 0.5);
 }
 
@@ -174,22 +176,43 @@ html, body {
 .chat_form {
   	position: relative; 
 	bottom: 0;   
-	overflow: none;      
+	overflow: none;  
+	background-color:white; 
+	padding-left: 6px;
+	padding-right: 6px;
+	padding-top: 1px;
+	padding-bottom: 1px;  
+	border: 1px solid black;
+	opacity:0.9; 	   
 }
 
 .chat_form input[type="text"] {
-	margin-top:20px; 
+	margin-top:10px;
 	width:95%; 	 
 }
 .expanded .chat_form input[type="text"] {
-	margin-top:-54px; 
-	 
+	margin-top:-35px; 	 
+	margin-left:-14px; 
+	padding:4px; 
 }
-
-
 
 .inputText {
     width: 100%
+}
+.sound_container {
+	position:fixed;
+	width:400px;
+	height:60px;
+	overflow:hidden;
+	bottom:-34px; 
+	right:0px;
+	z-index:1000; 
+}
+.sound_div {
+	position:absolute;
+	z-index:1000;
+	top:-276px;
+	left:-5px 
 }
 
 .trans {
@@ -212,7 +235,7 @@ html, body {
 }
 .chat_name {
 	font-size: 14px; 
-	color: #FF00FF;
+	color: #251925;
 	text-shadow: 0 6px 12px 2px rgba(0, 0, 0, 0.7); 
 	font-family:monospace; 
 	font-weight:bold; 
@@ -259,23 +282,22 @@ html, body {
 	padding-right: 20px; 
 	left:0; 
 	top: 0;
-
+	opacity:0.9;
 }
 
 .expanded .back_to_webchat{
-	position:fixed; 
-	top: 10px;
-	left: 0; 
-	color:black; 
-	font-size:14px;  
-	z-index:1056; 
-	background-color: black; 
-	width: 240px;
-    border: 1px solid #777777;
-    border-radius: 4px;
-    box-shadow: 0 3px 6px 4px rgba(0, 0, 0, 0.3);
-    padding: 8px 12px;
-	font-size:14px;
+	background-color: #000000;
+	border: 1px solid #777777;
+	border-radius: 4px;
+	box-shadow: 0 3px 6px 4px rgba(0, 0, 0, 0.3);
+	color: #FFFFFF;
+	font-size: 20px;
+	left: -15px;
+	padding: 8px 12px;
+	position: fixed;
+	top: 3px;
+	width: 800px;
+	z-index: 1056;
 }
 .expanded .chat_message {
 	display:inline; 
@@ -343,8 +365,35 @@ html, body {
   	position: absolute;
 	background-color: black;
 	width: 100%;
+	opacity:0.9;
 }
 
+.indicator_img_div img {
+	padding-top: -120px;	
+	padding-left: 40px; 
+	width: 10px; 
+	z-index: 10000;
+}
+
+.indicator {
+	padding-top: 150px;	
+	padding-left: 20px; 
+	z-index: 9000; 
+}
+
+.player_pos {
+	padding-top:230px;
+	padding-left:20px;  
+}
+
+.player_pos_img {
+	position: absolute;
+	z-index:10;
+}
+
+.player_name  {
+	color:white; 
+}
 
 .perspective_grid {
     position: absolute; 
@@ -373,29 +422,44 @@ html, body {
 
 .score_board {
 	position: fixed;
-	top: 160px;
-	right: 30px; 
-	-webkit-transform: rotate(56deg) skew(56deg, -35deg) scale(0.85, 1.23);
-	-mozkit-transform: rotate(56deg) skew(56deg, -35deg) scale(0.85, 1.23);
-	-o-transform:  rotate(56deg) skew(56deg, -35deg) scale(0.65, 1.23);
-	-ms-transform:  rotate(56deg) skew(56deg, -35deg) scale(0.65, 1.23);
-	transform:  rotate(56deg) skew(56deg, -35deg) scale(0.65, 1.23);
-	z-index:1000;
-	font-size: 30px;
-	color: pink;  
+	top: 310px;
+	left: 810px;
+	-webkit-transform: rotate(58deg) skew(58deg, -32deg) scale(0.85, 1.23);
+	-mozkit-transform: rotate(58deg) skew(58deg, -32deg) scale(0.85, 1.23);
+	-o-transform:  rotate(58deg) skew(58deg, -32deg) scale(0.65, 1.23);
+	-ms-transform:  rotate(58deg) skew(58deg, -32deg) scale(0.65, 1.23);
+	transform:  rotate(58deg) skew(56deg, -32deg) scale(0.65, 1.23);
+	z-index:100;
+	font-size: 50px;
+	color: white;
+	width:1200px; 
+}
+	
+.disabling {
+	position: fixed;
+	width: 1600px; 
+	height: 1000px;
+	z-index:10000; 
+	background-color:white; 
+	text-align:center; 
+	opacity:0.8;
+	padding-top:400px; 
 }
 
 .insert_npc {
 	position: absolute;
 	z-index:10;
 }
+
 .player_size {
-	height: 180px;
+	height: 160px;
+	width:100px; 
 }
 
 .player_big {
-	height: 200px;
-	z-index: 10000; 
+	height: 210px;
+	width:125px; 
+	z-index: 1000; 
 }
 
 .under_player {
@@ -412,7 +476,6 @@ html, body {
    overflow-x: hidden; 
 	 
 }
-
 
 .texts {
 	position: absolute;
@@ -462,6 +525,7 @@ html, body {
     z-index: 9000;
 	display:hidden; 
 }
+
 .form_img {
 	width: 100px; 
 	height: 160px; 

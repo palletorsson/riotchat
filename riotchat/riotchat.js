@@ -22,9 +22,7 @@ Gameboard.allow({
 
 Messages.allow({
 	insert: function (userid, doc) {
-		console.log(doc.message)
-		//return (userid && doc.message.length < 500); 
-		return true; 
+		return (userid && doc.message.length < 1000); 
 	},
 	update: function () {
 		return false; 
@@ -69,27 +67,143 @@ if (Meteor.isClient) {
 	Meteor.startup(function () {
 
 		// Settings
-		Settings.encryption = true;
+		Settings.encryption = false;
 		Settings.create_game = false; 
 		Settings.remove_game = false;
 
 		if (Settings.create_game) {
 			Meteor.call('create_gameboard');
 		}
+
 		if (Settings.remove_game) {
 			Meteor.call('remove_gameboard');
 		}
 
 		// Game
-		Game.gridOffsetY = 100;
-		Game.gridOffsetX = 300;
+		Game.gridOffsetY = 0;
+		Game.gridOffsetX = 0;
 
-		Game.playerOffsetY = 250;
-		Game.playerOffsetX = 80;
+		Game.playerOffsetY = 280; // top to bottom
+		Game.playerOffsetX = 100; // left to right
 
 		Game.network = {}
+		
+		Game.center_work = {}
 		Game.canvas = document.getElementById('myCanvas');
 		Game.c = Game.canvas.getContext('2d');
+		Game.broccoli_kopimi_num = 0; 
+		Game.broccoli_kopimi = {
+			1:" Obtain the Internet",
+			2:" Start using IRC",
+			3:" Group and birth a site",
+			4:" Experiment with research chemicals",
+			5:" Design a three-step program",
+			6:" Take a powerful stance for something positive and essential",
+			7:" Regulate nothing",
+			8:" Say that you have to move in two weeks, but stay for seven months, Come back a year later and do it all over again",
+			9:" ROTFLOL",
+			10:" Relax: you’re already halfway there",
+			11:" Just kidding",
+			12:" Don’t think outside the box. Build a box",
+			13:" Support support",
+			14:" Organize and go to parties and fairs",
+			15:" Start 3–4 blogs about the same things",
+			16:" Drain the private sector of coders, graphic artists and literati",
+			17:" Create a prize that is awarded",
+			18:" Express yourself often in the media, vaguely",
+			19:" Spread all rumors",
+			20:" Seek out and try carding and travel by expensive trains, Don’t order sushi",
+			21:" Start a radio station",
+			22:" Everything you use you can copy and give an arbitrary name, whether it’s a news portal, search engine or public service",
+			23:" Buy a bus",
+			24:" Install a MegaHAL",
+			25:" Make sure that you are really good friends with people who can use Photoshop, HTML, databases, and the like",
+			26:" Read a shitload of philosophy",
+			27:" Give yourself cult status, and act accordingly",
+			28:" Never aim",
+			29:" Pick on everyone",
+			30:" Invent or misuse Kopimi",
+			31:" Do things together as a composition, not as a collective",
+			32:" Make your advertising confusingly similar to that of established ventures",
+			33:" Always act with intent",
+			34:" Assert, in any context, that the establishment is lagging",
+			35:" When criticized, blame others and refer to the cluster formation’s non-linear time-creating swarm hierarchy",
+			36:" Send everything to all media, regardless of niche",
+			37:" Start an anonymous confession venture",
+			38:" Make babies and blog their upbringing",
+			39:" Be sure to closely study and keep abreast with substances",
+			40:" Participate in lively Internet discussions that don’t interest you",
+			41:" Start at least three to four IRC channels about every project",
+			42:" Fight and make up often",
+			43:" Share files with anyone who wants them",
+			44:" Deal often with humor sites",
+			45:" Hang out with the Left, the Right and the Libertarians",
+			46:" See “23” in everything",
+			47:" Flirt with money",
+			48:" Be AFK very little",
+			49:" Threaten large American culture corporations",
+			50:" Broadcast radio from Skäggetorp",
+			51:" Make a “1 list” for successful projects",
+			52:" Be unsure what the list should be named",
+			53:" Take upon yourself a lot of projects",
+			54:" Make sure to be connected to technical, aesthetical, and philosophical people of world class competence",
+			55:" Sleep over at each others houses regularly",
+			56:" Publish a book about Kopimi",
+			57:", At a trial, deny everything",
+			58:" Cultivate unfounded myths and react to them",
+			59:" Hack sites, e-mail accounts and more",
+			60:" Continuously mock and ridicule all aspects of copyright",
+			61:" Create an Internet site where people can buy and sell votes in democratic elections",
+			62:" Claim to be true, fair and satisfied",
+			63:" Collect money for fraux’s trip to Iceland",
+			64:" Confidently claim that all disconnected computers are broken",
+			65:" Do NOT go to Kurdistan",
+			66:" Make sure to thoroughly establish the claim that all hardware is overpriced",
+			67:" Affirm all words and signs",
+			68:" Mindfuck each other to appropriate extent",
+			69:" Take care of small animals",
+			70:" Create and spiritualize the concept of “Snel hest",
+			71:" Start and own a think-tank",
+			72:" Deny magnetism",
+			73:" Start a business school, Drop out",
+			74:" Write press releases often",
+			75:" Use IRC while in your underwear and eat pizza",
+			76:" Juggle with other people’s balls",
+			77:" Ensure that there is no conclusive evidence of Ikko giving monki advertising money by means of volada’s helicopter",
+			78:" Cause inflation and a global financial crisis",
+			79:" Express yourself vaguely if anyone asks you: 'How much is a bandwidth?'",
+			80:" Use 'dynamic' to mean 'completely out of control'",
+			81:" Never mention Hotmail, MSN or Windows",
+			82:" Have all project meetings on IRC",
+			83:" Claim to receive around 1256 e-mails a day",
+			84:" Force a prosecutor to draw up several thousand pages of drivel",
+			85:" Above all abstract everything",
+			86:" Have a liberal vision of hell",
+			87:" Consider yourself overly qualified for top positions in American film and music industries",
+			88:" Create the world’s largest file-sharing service in a twinkling",
+			89:" Attract international attention by accident",
+			90:" Control the portal and opinion makers in all mediums",
+			91:" Standardize and explain your way of doing things at all levels",
+			92:" Have 3576 anonymous confessions on your hard drive, Including the authors’ IP addresses and personal information",
+			93:" Preserve the Internet",
+			94:" Mention the Internet as a source in serious discussions",
+			95:" Rarely mention reasons for your IT elitism",
+			96:" Dismiss expressions like “from farm to table” as superstition",
+			97:" Follow the yellow fellow",
+			98:" Skip the last points of your 100 point list",
+			99:" Establish social services as a parody of antisocial services",
+			101:" Start from scratch",
+			102:" Be careful of burning kittens",
+			103:" Write a book. but start with the back cover",
+			104:" Use parables in abundance. preferably about “butter” and “snow”",
+			105:" Stop using IRL, Use AFK instead",
+			106:" Cultivate contacts within the powers of state intelligence services",
+			107:" Always define “flat organization” arbitrarily, subjectively and without common sense",
+			108:" Upload",
+			109:" Take over #g-d",
+			110:" PROFIT",
+		}
+		
 		
 		Game.topBoundary = Game.gridOffsetY;
 		Game.buttomBoundary = Game.canvas.height / 2 + 500;
@@ -102,7 +216,7 @@ if (Meteor.isClient) {
 			}
  
 		Game.tile = new Image();
-		Game.tile.src = "/img/under.png";
+		Game.tile.src = "/img/green.png";
 
 		Game.space = new Image();
 		Game.space.src = "/img/space_5.jpg";
@@ -133,6 +247,18 @@ if (Meteor.isClient) {
  		Game.black_2 = new Image();
 		Game.black_2.src = "/img/dark_part.png";
 		
+		Game.dark = new Image();
+		Game.dark.src = "/img/black_current.png";
+
+		Game.red = new Image();
+		Game.red.src = "/img/red.png";
+		
+		Game.eye = new Image();
+		Game.eye.src = "/img/eye_tran.png";
+		
+		Game.positionX_net_previous = 0; 
+		Game.positionY_net_previous = 0;
+
 
 		Game.resetTileCount = function() {
 			Game.tiles_green = 0; 
@@ -140,19 +266,13 @@ if (Meteor.isClient) {
 			Game.tiles_copy_me = 0; 
 			Game.tiles_natural = 0; 
 		}
-
+		
 		Game.resetTileCount(); 
+		Game.your_avatar_id = "";
 
-		Game.draw = function(tileMap) {
-		
-		
-			//Game.c.fillStyle = '#000000'; 
-       		//Game.c.fillRect(0, 0, Game.c.width, Game.c.height);
-
-		
-							   	
+		Game.draw = function(tileMap) {							   	
 			Game.c.clearRect (0, 0, Game.c.width, Game.c.height);
-			//Game.c.drawImage(Game.space, 0, 0, Game.c.width, Game.c.height);
+
 			var i = 0; 
 			for (var row = 0; row < Game.grid.width; row++) {
 				for (var col = 0; col < Game.grid.height; col++) {
@@ -164,14 +284,18 @@ if (Meteor.isClient) {
 
 					var tilePositionY = (row + col) * (Game.tile.height / 2);
 
-					/* 	2 is green previously allocated 
-						1 is current postion 
-					    3 is good ia 
-						4 is bad ia    			
-						else is untouched 
-					*/
-				
-							
+					/* 	
+					 * null is untouched 
+					 * 1 is player current postion 
+					 * 2 is step by player, light green previously allocated  
+					 * 3; big good IA
+					 * , 4, 5 is good IA
+					 * 7: low drak bad IA
+					 * 8: high dark bad IA 
+					 * 9: unused
+					 * 10 - 20 environment    			 
+					 */
+									
 					if ( tileMap[row] != null && tileMap[row][col] != null) {
 						
 						if ( tileMap[row][col] == 1 ) {
@@ -180,77 +304,111 @@ if (Meteor.isClient) {
 						} else if ( tileMap[row][col] == 2 ) {
 							Game.tiles_green = Game.tiles_green + 1; 
 							Game.c.drawImage(Game.green_current, Math.round(tilePositionX), Math.round(tilePositionY), Game.tile.width, Game.tile.height);	
-							
-						} else if ( tileMap[row][col] == 3 ) {
-							Game.tiles_copy_me = Game.tiles_copy_me + 1; 
-							Game.c.drawImage(Game.copy_me, Math.round(tilePositionX), Math.round(tilePositionY), Game.tile.width, Game.tile.height);	
- 							
-    					} else if ( tileMap[row][col] == 7 ) {
+							Game.tiles_copy_me = Game.tiles_copy_me + 0.1; 
+						} else if ( tileMap[row][col] == 5) {
+							Game.tiles_copy_me = Game.tiles_copy_me + 1.5; 
+							Game.c.drawImage(Game.copy_me, Math.round(tilePositionX), Math.round(tilePositionY), Game.tile.width, Game.tile.height);
+							var newItem = "item" + i;	
+							Game.network[newItem] =  { "positionX": Math.round(tilePositionX)+32, "positionY":Math.round(tilePositionY)+32  };
+    					} else if ( tileMap[row][col] == 3 ) {
 							Game.tiles_copy_me = Game.tiles_copy_me + 1; 
 							Game.c.drawImage(Game.copy_me_1, Math.round(tilePositionX), Math.round(tilePositionY), Game.tile.width, Game.tile.height);	
-							//var newItem = "item" + i;
-							//Game.network[newItem] =  { point: row+"_"+col, "positionX": Math.round(tilePositionX), "positionY":Math.round(tilePositionY) } ;
-						} else if ( tileMap[row][col] == 8 ) {
-							Game.tiles_copy_me = Game.tiles_copy_me + 1; 
+						} else if ( tileMap[row][col] == 4) {
+							Game.tiles_copy_me = Game.tiles_copy_me + 0.5; 
 							Game.c.drawImage(Game.copy_me_2, Math.round(tilePositionX), Math.round(tilePositionY), Game.tile.width, Game.tile.height);
-							//var newItem = "item" + i;
-							//Game.network[newItem] =  { point: row+"_"+col, "positionX": Math.round(tilePositionX), "positionY":Math.round(tilePositionY) } ; 
-						} else if ( tileMap[row][col] == 4 ) {
+						} else if ( tileMap[row][col] == 8 ) {
 							Game.c.drawImage(Game.black, Math.round(tilePositionX), Math.round(tilePositionY), Game.tile.width, Game.tile.height);	
-var newItem = "item" + i;	
-							Game.network[newItem] =  { "positionX": Math.round(tilePositionX)+32, "positionY":Math.round(tilePositionY)+32  }; 
-					
-							Game.tiles_bad = Game.tiles_bad + 1; 					
-						} else if ( tileMap[row][col] == 5 ) {
-							Game.c.drawImage(Game.black_2, Math.round(tilePositionX), Math.round(tilePositionY), Game.tile.width, Game.tile.height);	
-					
-							Game.tiles_bad = Game.tiles_bad + 1; 
+								
+						 	var newItem = "item" + i;	
+							Game.center_work[newItem] =  { "positionX": Math.round(tilePositionX)+32, "positionY":Math.round(tilePositionY)+32  };
+							Game.tiles_bad = Game.tiles_bad + 0.2; 					
+						} else if ( tileMap[row][col] == 7 ) {
+							Game.c.drawImage(Game.black_2, Math.round(tilePositionX), Math.round(tilePositionY), Game.tile.width, Game.tile.height);						
+							Game.tiles_bad = Game.tiles_bad + 0.1; 
 						} else if ( typeof (tileMap[row][col]) == "string"  ) {
 							Game.c.drawImage(Game.green_current, Math.round(tilePositionX), Math.round(tilePositionY), Game.tile.width, Game.tile.height);	
 							Game.tiles_green = Game.tiles_green + 1; 
+						} else if (tileMap[row][col] == 11 ) {
+							Game.c.drawImage(Game.red, Math.round(tilePositionX), Math.round(tilePositionY), Game.tile.width, Game.tile.height);	
+							 
 						} else  {
 							Game.c.drawImage(Game.red, Math.round(tilePositionX), Math.round(tilePositionY), Game.tile.width, Game.tile.height);	
 						}
 					} else {
-						Game.c.drawImage(Game.tile, Math.round(tilePositionX), Math.round(tilePositionY), Game.tile.width, Game.tile.height);	
+						Game.c.drawImage(Game.dark, Math.round(tilePositionX), Math.round(tilePositionY), Game.tile.width, Game.tile.height);	
 						Game.tiles_natural = Game.tiles_natural + 1; 
 					}
-					i = i + 1; 
+					i = i + 1; 	
 				}
 			}
-
-
-			//console.log(Game.network)
-
-
-			var	positionX_previous = 300; 
-			var positionY_previous = 300;
-			Game.c.lineWidth = 2;
-			Game.c.strokeStyle="brown"; 
-			$.each(Game.network, function( index, value ) {
-
-				//console.log( index + ": " + value.positionX + ": " + value.positionY + ": " +positionX_previous +": " + positionY_previous );
-				//if (value.positionX < 800 && value.positionY < 800) {
-					Game.c.beginPath();
-					Game.c.moveTo(positionX_previous, positionY_previous);
-					Game.c.lineTo(value.positionX, value.positionX);
-					
-					Game.c.stroke()
-					positionX_previous = value.positionX; 
-					positionY_previous = value.positionY;
-	//			}
-			});
-
-			Game.network = {}
-			var all = Game.tiles_natural + Game.tiles_bad + Game.tiles_green; 
-			var good = (Game.tiles_green / all) * 100;
-			$(".score_board").html("Datalove: "+good.toFixed(2)+ "%"); 
-			Game.tiles_natural = 0; Game.tiles_bad = 0; Game.tiles_green = 0; 
-		}
-		Game.init_interval = true;
-
- 		//Message
 		
+
+		Game.c.lineWidth = 2;
+		Game.c.strokeStyle='rgba(255,255,255,0.6)'; 
+		Game.c.beginPath()
+		
+		var rand_pos_net = Math.floor((Math.random()*6)-3);
+	
+		$.each(Game.network, function( index, value ) {
+			if (index == 0) {
+				Game.c.moveTo(value.positionX, value.positionY);
+			}
+			Game.c.lineTo(value.positionX+32+rand_pos_net, value.positionY-16+rand_pos_net);			
+		});	
+		Game.c.closePath();
+		Game.c.stroke()
+		
+		Game.network = {}
+
+		Game.c.strokeStyle='rgba(0,0,0,0.3)';  
+		Game.c.beginPath()
+		var rand_pos_center = Math.floor((Math.random()*200)+600); 
+		Game.c.drawImage(Game.eye, rand_pos_center-32, rand_pos_center-32);	
+		$.each(Game.center_work, function( index, value ) {
+			Game.c.moveTo(rand_pos_center, rand_pos_center);
+			Game.c.lineTo(value.positionX+32, value.positionY-16);			
+		});	
+		Game.c.closePath();
+		Game.c.stroke()
+		
+							
+		Game.center_work = {}
+		if(Math.floor((Math.random()*10)-1)%3 == 0) {
+			Game.broccoli_kopimi_num++; 
+		}
+		var all = Game.tiles_bad + Game.tiles_green + Game.tiles_copy_me; 
+		var good = ((Game.tiles_copy_me - Game.tiles_bad) / all) * 100;
+
+		if (good > 20) {	
+			$(".disabling").show().html("<h5>Datalove: We won! Just kidding, Lets take the battle to the next level. Kopimi!</h5>"); 
+			$(".score_board").html("<h5>Datalove: We won! Just kidding, Lets take the battle to the next level. Kopimi!</h5>"); 
+			Meteor.setTimeout(function(){				
+				Meteor.call('remove_gameboard');
+				Meteor.call('create_gameboard');
+				$(".disabling").hide(); 
+			}, 5000);	
+			
+		} else {		
+			$(".score_board").html("<h3>Datalove: "+good.toFixed(2)+ "% | "+ Game.broccoli_kopimi[Game.broccoli_kopimi_num]) +"</h3>"; 	
+		}
+		
+		if (Game.broccoli_kopimi_num > 110) {
+				Game.broccoli_kopimi_num = 0; 
+		}
+		
+	
+		Game.tiles_natural = 0; Game.tiles_bad = 0; Game.tiles_green = 0; Game.tiles_copy_me = 0;
+		var id = Game.your_avatar_id;
+		var html_= '<img src="img/marker.png" />'; 
+		var element_ = $("#div_"+id+ " .indicator_img_div");
+		
+		element_.html('<img src="img/marker_.png" />'); 
+	}
+		
+		
+		Game.init_interval = true;
+		
+ 		//Message
 		HandleMessage.ScrollDown = function() {
 			var chatDiv = $(".messages");
 			chatDiv.scrollTop(chatDiv.prop("scrollHeight"));
@@ -263,19 +421,12 @@ var newItem = "item" + i;
 			})
 
 		}; 
-
-
- 		
-			//key = Session.get("visable_secret"); 
-		//	console.log(key); 
-
+		// 
 		Meteor.setTimeout(function(){
 			var is_settings = Meta_setting.findOne({ _id: "1"});
 			if (!is_settings) {
 				Meta_setting.insert({ _id: "1", topic:'piracy is fun', channel: "riotchat" });
 			}
-
-	
 		}, 3000);
 
 		Session.set("showchat", true); 			
@@ -283,27 +434,14 @@ var newItem = "item" + i;
 		HandleMessage.helpEnc = function(message) {
 			alert(message);	console.log(message)
             return message.ciphertext.toString(CryptoJS.enc.Base64);
-	
-            
         }
 
         HandleMessage.helpDec = function (message) {
-		alert(CryptoJS.enc.Base64(message))
             return CryptoJS.enc.Base64(message);
       	}
 
-		Meteor.call('GetSecret', function(err, data) {
-			if (err) {
-					console.log(err);
-					Session.set("visable_secret", false); 
-				} else {
-	               	var secret = {ct: data.ct, iv: data.iv, s:data.s}
-					secret = JsonFormatter.parse(secret)
-					secret = CryptoJS.AES.decrypt(secret, "copyriot", { format: JsonFormatter });
-					var the_secret = secret.toString(CryptoJS.enc.Utf8);
-					Session.set("visable_secret", the_secret); 
-				}
-			});
+	
+		Session.set("showchat", true); 
 	});
 
  
@@ -314,12 +452,11 @@ var newItem = "item" + i;
 		var id = Meteor.userId();
 		var users_avatar = Avatars.findOne({avatar_id: id});
 		if (users_avatar) {
-			Session.set("avatar", true); 
+			Session.set("avatar", true);
+			Game.your_avatar_id = users_avatar.avatar_id;  
 		} else {
 			Session.set("avatar", false);
 		}
-	
-
 	  }
 	});
 
@@ -343,6 +480,7 @@ var newItem = "item" + i;
 				var gamemap = data;	
 				tileMap = gamemap.board;
 				Game.draw(tileMap);
+				$(".disabling").hide(); 
 			}
 		});
 	}
@@ -371,6 +509,7 @@ var newItem = "item" + i;
 	 			if (Meteor.userId()) {
 						var user = Meteor.user();
 						var avatar = Avatars.findOne({avatar_id: user._id});
+		
 						if(avatar) {
 
 						// Take into account the offset on the X axis caused by centering the grid horizontally
@@ -387,41 +526,33 @@ var newItem = "item" + i;
 		
 						row = Math.round(row / Game.tile.height);
 						col = Math.round(col / Game.tile.height);
-					
+						console.log(row + " " +col)
+						
 						// Check the boundaries!
-				
+					
+						
 						if (row >= 0 && 
 							col >= 0 && 
 							row <= Game.grid.width &&
 							col <= Game.grid.height) {			
 							Game.c.width  = $( window ).width();
-							Game.c.height = $( window ).height()-100;		
+							Game.c.height = $( window ).height();
 
-							if (Game.tiles_bad < 10) {
-							//	tileMap[7][7] = 4; 
-							}
-
-						
-							if (Game.tiles_copyme == 0) {
-							//	tileMap[1][1] = 3;  
-							}		
-
-							Game.resetTileCount(); 
-
-							// Gameboard.update({ _id: "1" }, { $set: { 'board' : tileMap }}); 
+		
 		 					last_player_row = avatar.last_player_row || 4; 
  							last_player_col = avatar.last_player_col || 4; 
-							
-							var position_y_top = e.pageY-Game.playerOffsetY; 
-							var position_x_left =  e.pageX-Game.playerOffsetX;			 
-		
-						
 
+							var clickY = e.pageY; 
+							var clickX = e.pageX; 
+							var position_y_top = clickY-Game.playerOffsetY; 
+							var position_x_left = clickX-Game.playerOffsetX;	
+									 
+						
 							Meteor.call('moveAi', row, col, avatar._id, last_player_row, last_player_col, position_y_top, position_x_left, function(err, data) {
 								if (err) {
 									console.log(err);
 								} else {
-									console.log(data);
+					
 									Game.draw(data);
 								}
 							});
@@ -450,32 +581,39 @@ var newItem = "item" + i;
 	Meteor.subscribe("messages");
 
 	Template.messages.rendered = function () {
- 		if (Meteor.userId()) {
-			
-		}
+ 		Meteor.setTimeout(function(){
+			HandleMessage.ScrollDown() 
+			$("#message").focus(); 
+		}, 1000); 
 	}
 
 	Template.messages.messages = function () {	
 		if (Settings.encryption) {
-			var items = Messages.find({}, {sort: {time : -1}, limit: 100 }).fetch();
+			
+			var today = new Date;
+				today = today.valueOf();
+			var yesterday = new Date
+			    yesterday = yesterday.setDate(yesterday.getDate()-1)
+				yesterday = yesterday.valueOf();
+				
+			var items = Messages.find({}, {sort: {time : -1}, limit: 100 }, {time: {$lt: yesterday}}).fetch();
 			items = items.sort(function(a,b) { return parseInt(a.time) - parseInt(b.time) } );		
 			var take_secret = Session.get("visable_secret");
 			items.forEach( function(item) { 
- 				try {
 
-                    message = {ct : item.message, iv: item.iv, s:item.s}
-					message = JsonFormatter.parse(message)
+ 				try {
+                    message = {ct : item.message, iv: item.iv, s:item.s}; 
+					message = JsonFormatter.parse(message); 
 					var decrypted = CryptoJS.AES.decrypt(message, take_secret, { format: JsonFormatter });
-					// console.log(decrypted); 
-					var new_message = decrypted.toString(CryptoJS.enc.Utf8)
- 					// console.log(new_message); 
+					var new_message = decrypted.toString(CryptoJS.enc.Utf8); 
 					item.message = new_message;
                 } catch (err) {
-                   // console.log("Failure in toString(CryptoJS.enc.Utf8): " + err.message);
+					console.log("Failure in toString(CryptoJS.enc.Utf8): " + err.message);
                 }
 	   			
 			});
 
+				
 			items.forEach(function(item) {
 				// item.message = Game.urlify(item.message); 
 			});
@@ -484,12 +622,12 @@ var newItem = "item" + i;
 		} else {
 			var items = Messages.find({}, {sort: {time : -1}, limit: 100 }).fetch();
 			items = items.sort(function(a,b) { return parseInt(a.time) - parseInt(b.time) } );
-			items.forEach(function(item) {
-				item.message = Game.urlify(item.message); 
-			});
+			//items.forEach(function(item) {
+				//item.message = Game.urlify(item.message); 
+			//});
 			return items; 
 		}
-  		return messages;
+  		
 	};
 
 	
@@ -520,21 +658,17 @@ var newItem = "item" + i;
 				Session.set("irc_mode", false);
 				$(".messages").removeClass( "expanded" )
 				$('.chat_form').removeClass( "irc" );
-				$('.divider').show();
-				
+				$('.divider').show();		
 				HandleMessage.ScrollDown();
 			},
-		'click a#irc_mode': function (e, t) {
-		
+		'click a#irc_mode': function (e, t) {	
 				Session.set("irc_mode", true);
 				$(".messages").removeClass( "sized" ).addClass( "expanded" );
-				$('.chat_form').addClass( "irc" );
-				
+				$('.chat_form').addClass( "irc" );			
 			},
 		'click a#hidechat': function (e, t) {
 				Session.set("showchat", false);
 				Session.set("irc_mode", false);
-				HandleMessage.ScrollDown();
 			},
 		'click a#onmiHal': function (e, t) {
 			Session.set("talk_to_omnihal", true); 	
@@ -561,8 +695,7 @@ var newItem = "item" + i;
 						Meteor.setTimeout(function() {
 							$(element).val('');
 						}, 2000);													
-					}
-					
+					}				
 				});
 				element.value = ""; 
 				return false;
@@ -575,7 +708,7 @@ var newItem = "item" + i;
 		Meteor.setTimeout(function(){
 			HandleMessage.ScrollDown() 
 			$("#message").focus(); 
-		}, 1000); 
+		}, 2000); 
 	
 	};  	
 
@@ -590,86 +723,130 @@ var newItem = "item" + i;
 
 	Template.chat_message.events({
 	    'keydown' : function (e, t) {
-    		if (e.which === 13) { 
+    		if (e.which === 13) { 			
 				var user = Meteor.user(),	
-					avatar = Avatars.findOne({avatar_id: user._id}),
-					avatar_img = "default_avatar.png",
-					username = "_nano",
-					message_form = e.target;
+				avatar = Avatars.findOne({avatar_id: user._id}),
+				avatar_img = "default_avatar.png",
+				username = user.username || "_nano",
+				message_form = e.target;
 
-				if (message_form.value.trim()[0] == "/") {
+				HandleMessage.message = message_form.value 
+				console.log("start"+HandleMessage.message);
+				// message = message.replace(/<(?:.|\n)*?>/gm, '');
 				
-					var splited = message_form.value.split(" "); 
-					if (splited[0] == "/topic") {
-						var topic = ''; 
-							for (var j = 1; j < splited.length; j++) {
-								topic = topic + " " + splited[j]; 
-							}
-							Meta_setting.update({_id: "1"}, { $set: {topic: topic}}); 
-							message_form.value = '';
-					}
-					return  true; 
-				} 				
-
-
-
-
-				if(avatar) {
+				if (HandleMessage.message.length > 1 && $.trim(HandleMessage.message) != '') {	
+				
+					if(avatar) {														
+						avatar_img = avatar.avatar_img;
+						username = avatar.avatar_name;	
+						
+						if (username.trim() == '') {			 
+							username = user.profile.name || "_nano";
+						}
+						
+						if (avatar_img.trim() == '') {
+							avatar_img = "default_avatar.png";
+						}
 															
-					avatar_img = avatar.avatar_img;
-					username = avatar.avatar_name;	
-					if (username.trim() == '') {
-						 
-						username = user.profile.name || "_nano";
+					} 
+
+				
+					if (HandleMessage.message.trim()[0] == "/") {			
+						var splited = HandleMessage.message.split(" "); 
+						if (splited[0] == "/topic") {
+							console.log("toic");
+							var topic = ''; 
+								for (var j = 1; j < splited.length; j++) {
+									topic = topic + " " + splited[j]; 
+								}
+								Meta_setting.update({_id: "1"}, { $set: {topic: topic}}); 
+								HandleMessage.message = '';
+								message_form.value = '';
+						} else if (splited[0] == "/omnihal") {
+							console.log("omnihal");
+							var question = ''; 
+								for (var g = 1; g < splited.length; g++) {
+									question = question + " " + splited[g]; 
+								}
+					
+							Meteor.call('fetchFromService', question, function(err, respJson) {
+								if(err) {
+									console.log("error occured on receiving data on server. ", err );
+									message_form.value.val("I'm asleep, please checkin later...");
+									Meteor.setTimeout(function() {
+										message_form.value = '';
+									}, 1000);
+								} else {
+									var msg = "/omnihal: "+respJson.question; 
+									
+									Messages.insert({
+										name: username,
+										owner: user._id,
+										message: msg,
+										avatar_img: avatar_img, 
+										time: Date.now(),
+									});
+									var omni_msg = username + ": "+respJson.answer;
+									Messages.insert({
+										name: "omnihal",
+										owner: user._id,
+										message: omni_msg,
+										avatar_img: "omni.gif", 
+										time: Date.now(),
+									});
+									
+									Meteor.setTimeout(function() {
+										message_form.value = '';
+									}, 1000);													
+								}
+							});
+							HandleMessage.message = ''
+						} else {
+							HandleMessage.message = ''
+						}
+					} // end of console 				
+					if (HandleMessage.message.length > 1) {
+						console.log("end"+HandleMessage.message)
+						
+						if (Settings.encryption) {
+							var make_secret = Session.get("visable_secret") || "copyriot";
+							var encrypted = CryptoJS.AES.encrypt(HandleMessage.message, make_secret, { format: JsonFormatter });
+							var json = JsonFormatter.stringify(encrypted)	
+							Messages.insert({
+								name: username,
+								owner: user._id,
+								s: json.s, 
+								iv: json.iv,
+								message: json.ct,
+								avatar_img: avatar_img, 
+								time: Date.now(),
+							});
+
+						} else {
+							Messages.insert({
+								name: username,
+								owner: user._id,
+								message: HandleMessage.message,
+								avatar_img: avatar_img, 
+								time: Date.now(),
+							});
+						}		
 					}
-					if (avatar_img.trim() == '') {
-						avatar_img = "default_avatar.png";
-					}									
-				} else {
-					username = user.username;
-				}
-				
-				message = message_form.value
-				
+						message_form.value = '';
+					
+					Meteor.setTimeout(function(){
+							HandleMessage.ScrollDown() 
+							$("#message").focus(); 
+						}, 500); 
+						
+       	     	} else {	
+					console.log("message to short"); 
+				} // end of to short message
 
-				message = message.replace(/<(?:.|\n)*?>/gm, '');
+    		} //end of keydown 13
+		} // end of keydown
 
-				
-
-				if (Settings.encryption) {
-					var make_secret = Session.get("visable_secret");
- 				   	var encrypted = CryptoJS.AES.encrypt(message, make_secret, { format: JsonFormatter });
-					var json = JsonFormatter.stringify(encrypted)
-					 
-				}
-			
-			 	if (message.length > 1 && $.trim(message) != '') {
-		    		Messages.insert({
-		      			name: username,
-						owner: user._id,
-						s: json.s, 
-						iv: json.iv,
-		      			message: json.ct,
-						avatar_img: avatar_img, 
-		      			time: Date.now(),
-		    		});
-				message_form.value = '';
-				Meteor.setTimeout(function(){
-					HandleMessage.ScrollDown() 
-					$("#message").focus(); 
-				}, 500); 
-
-       	     	} else {
-					message_form.value = '';	
-				}
-
-    		} else {
-			//	if ((this.rows * this.cols) <= this.value.length) 
-    			//	$(this).animate({ height: "4em" }, 500);                   
-			}
-		}
-
-	});
+	}); // end of chat events
 
 	// Avatar function:
 	Meteor.subscribe("avatars");
@@ -722,7 +899,25 @@ var newItem = "item" + i;
 			event.pageX = e.clientX;
 			event.pageY = e.clientY;
 			$(".the_canvas").trigger(event);
-		}
+		}, 
+		'click .score_board' : function (e, t) {
+			var event = new jQuery.Event("click");
+			event.pageX = e.clientX;
+			event.pageY = e.clientY;
+			$(".the_canvas").trigger(event);
+		},
+		
+		'mouseover img.player' : function (e, t) {
+			var player = $("img#"+this.avatar_id);
+			player.addClass("player_big");
+ 		}, 
+ 		'mouseout img.player' : function (e, t) {
+ 			var player = $("img#"+this.avatar_id);
+ 			player.removeClass("player_big");
+ 			
+ 		}
+
+  
 	});
 
 	Template.avatarForm.avatar = function () {
@@ -847,6 +1042,8 @@ if (Meteor.isServer) {
   
 		return  Gameboard.find({_id:"1"});
 	});
+	
+
 
 	// communication with omniHal API
 	Meteor.methods({
@@ -868,11 +1065,13 @@ if (Meteor.isServer) {
 			}
 		}, 
 		GetSecret: function() {
-			var url = "http://127.0.0.1:8000/unsecure/";
-			//synchronous GET
+			var url = "http://artliberated.org/unsecure/";
+
 			var result = Meteor.http.get(url, {timeout:30000});
 			if(result.statusCode==200) {
 				var respJson = JSON.parse(result.content);
+				//respJson = respJson.substring(1, respJson.length-1);
+
 				return respJson;
 				
 			} else {
@@ -882,30 +1081,53 @@ if (Meteor.isServer) {
 		},
 
 		moveAi: function(row, col, avatar_id, last_player_row, last_player_col, position_y_top, position_x_left) {
+			//Gameboard.remove({ _id: "1" });
+			//Gameboard.insert({ _id: "1", name: 'copyriot', board: {}, the_bad: [16,16], the_omni: [7,7], the_copyme: [1,1] });
 			var the_game = Gameboard.findOne({});
 			var tileMap = the_game.board; 
-
+			
+			/* 	
+			 * null is untouched 
+			 * 1 is player current postion 
+			 * 2 is step by player, light green previously allocated  
+			 * 3, 4, 5 is good IA
+			 * 7: low drak bad IA
+			 * 8: high dark bad IA 
+			 * 9: unused
+			 * 10 - 20 environment    			 
+			 */
+					
 
 			// player 
 			var player_row = row; 
 			var player_col = col; 
 	
-			if  (Math.abs(player_row - last_player_row) < 6 && Math.abs(player_col - last_player_col) < 6 &&  typeof (tileMap[player_row][player_col]) != "string") {
-				if (tileMap[player_row][player_col] == 4) {
-					tileMap[player_row][player_col] = 5;
-				} else {
-					tileMap[player_row][player_col] = 2;
-				}
-				Avatars.update({_id:avatar_id}, { $set: 
-						{ 
-						avatar_top: position_y_top, 
-						avatar_left: position_x_left, 
-						last_player_row: player_row, 
-						last_player_col: player_col
-						}});
-			} 
+			if (!tileMap[player_row]|| tileMap[player_row] === 'undefined') {
+				tileMap[player_row] = [];
+			}	
+			
+			// If player step on enemy or unallocated 
+			if (tileMap[player_row][player_col] == 8) { // if high dark
+				tileMap[player_row][player_col] = 7; // set to low dark
+			} else if (tileMap[player_row][player_col] == null) { // if it is environment
+				tileMap[player_row][player_col] = 2;
+			} else if (tileMap[player_row][player_col] < 7) { // is kopimi
 
-
+			} else if (tileMap[player_row][player_col] > 10 ) { // is environment 			
+			
+			} else {
+				tileMap[player_row][player_col] = 2; // else set to light green
+			}
+			
+			Avatars.update({_id:avatar_id}, { $set: 
+					{ 
+					avatar_top: position_y_top+50, // ajusting postion 
+					avatar_left: position_x_left+40,  // ajusting postion 
+					last_player_row: player_row, 
+					last_player_col: player_col
+					}});
+		
+			
 			// bad ai 
 			var bad_one_pos = the_game.the_bad; 
 			
@@ -918,10 +1140,10 @@ if (Meteor.isServer) {
 			new_col = rand_col + bad_col; 
 
 			// bad ai revolve map 
-			if (new_row < 0) { new_row = 16 }; 
-			if (new_row > 16) { new_row = 0 }; 
-			if (new_col < 0) { new_col = 16 };
-			if (new_col > 16) { new_col = 0 };
+			if (new_row < 1) { new_row = 16 }; 
+			if (new_row > 16) { new_row = 1 }; 
+			if (new_col < 1) { new_col = 16 };
+			if (new_col > 16) { new_col = 1 };
 
 
 			if (!tileMap[new_row] || tileMap[new_row] === 'undefined') {
@@ -930,12 +1152,30 @@ if (Meteor.isServer) {
 
  			// check to see if bad trying to step on current player position 
 
-			if ( tileMap[new_row][new_col] == 1 || tileMap[new_row][new_col] == 2 ) {	
-				tileMap[new_row][new_col] = 4;
-				new_row = new_row +2; 
-				new_col = new_col +2;			
+			if ( tileMap[new_row][new_col] == 2 || typeof (tileMap[player_row][player_col]) == "string") { 
+				tileMap[new_row][new_col] = 8; // set to dark but move the current bad IA up the board
+				new_row = new_row +1; 
+				new_col = new_col +1;
+			} else if ( tileMap[new_row][new_col] == 3 || tileMap[new_row][new_col] == 4 || tileMap[new_row][new_col] == 5 ) { 
+							var rand = Math.floor( (Math.random()*5)+1);
+								if (rand == 1 ) { 
+									tileMap[new_row][new_col] = 8; 
+									tileMap[bad_row][bad_col] = 4; 
+								} else if (rand == 3) {
+									tileMap[new_row][new_col]  = 8; 
+									tileMap[bad_row][bad_col] = 8; 
+								}  else if (rand == 4) {
+									tileMap[new_row][new_col] = 4; 
+									tileMap[bad_row][bad_col] = 8; 
+								} else {
+									tileMap[new_row][new_col] = 5; 
+									tileMap[bad_row][bad_col] = 8; 
+									
+								}			
+			} else if (tileMap[new_row][new_col] > 10 ) { // if it is environment
+						
 			} else {
-				tileMap[new_row][new_col] = 4;
+				tileMap[new_row][new_col] = 8; // else just move the bad IA
 			}
 	
 			// good ai
@@ -949,10 +1189,10 @@ if (Meteor.isServer) {
 			var new_good_row = rand_row + current_good_row;
 			var new_good_col = rand_col + current_good_col; 
 
-			console.log(new_good_row, new_good_col);
-			if (new_good_row < 0 || new_good_row > 14) {new_good_row=1}
-			if (new_good_col < 0 || new_good_col > 14) {new_good_col=1}
-			var new_good_col
+		
+			if (new_good_row < 0 || new_good_row > 16) {new_good_row=3}
+			if (new_good_col < 0 || new_good_col > 16) {new_good_col=3}
+		
 			if (!tileMap[new_good_row] || tileMap[new_good_row] === 'undefined') {
 				tileMap[new_good_row] = [];
 			}	
@@ -965,36 +1205,39 @@ if (Meteor.isServer) {
 								tileMap[new_good_row+square_postions[i]] = [];
 							}	
 					var walk_value = tileMap[new_good_row+square_postions[i]][new_good_col+square_postions[j]]; 
+				
 					if ( walk_value == 2 )  {
 						var can_move = true; 							
-					} else if (walk_value == 4) {
-						var can_hit = true; 							
-						new_good_row = new_good_row -2; 
-						new_good_col = new_good_col -2;			
+					} else if (walk_value == 7 || walk_value == 8) {
+						var can_hit = true; 
+													
+						new_good_row = new_good_row -1; 
+						new_good_col = new_good_col -1;			
 					}
 				}
 			} 
 
-			if (new_good_row <= 0 || new_good_row > 16) {new_good_row=1}
-			if (new_good_col <= 0 || new_good_col > 16) {new_good_col=1}
+			if (new_good_row <= 0 || new_good_row > 16) {new_good_row=3}
+			if (new_good_col <= 0 || new_good_col > 16) {new_good_col=3}
 			 			
-			if (can_move) {
-				if (tileMap[new_good_row][new_good_col] == 7) {
-					tileMap[new_good_row][new_good_col] = 8;
-				} else if (tileMap[new_good_row][new_good_col] == 8) {
-					tileMap[new_good_row][new_good_col] = 3;
-				} else if (tileMap[new_good_row][new_good_col] == 3) {
-					tileMap[new_good_row][new_good_col] = 3;
-			
+			if (can_move) { 
+ 				if (tileMap[new_good_row][new_good_col] == 3) {
+					tileMap[new_good_row][new_good_col] = 4;
+				} else if (tileMap[new_good_row][new_good_col] == 4) {
+					tileMap[new_good_row][new_good_col] = 5;
+				} else if (tileMap[new_good_row][new_good_col] == 5) {
+					tileMap[new_good_row][new_good_col] = 5;
+				} else if (tileMap[new_good_row][new_good_col] > 10 ) {
+				
 				} else {
-					tileMap[new_good_row][new_good_col] = 7;
-					}
+					tileMap[new_good_row][new_good_col] = 3;
+				}
 				
 			} else if (can_hit) {
-				tileMap[new_good_row][new_good_col] = 3;
+				tileMap[new_good_row][new_good_col] = 5;
 				
-				new_good_row = current_good_row+1;
-				new_good_col = current_good_col+1; 
+				new_good_row = current_good_row-1;
+				new_good_col = current_good_col-1; 
 			} 
 			
 			Gameboard.update({ _id: "1" }, { $set: { the_bad: [new_row, new_col], the_copyme: [new_good_row, new_good_col], board: tileMap }});
@@ -1010,25 +1253,48 @@ if (Meteor.isServer) {
 		},
 		
 		create_gameboard: function() {
-			Gameboard.insert({ _id: "1", name: 'copyriot', board: {}, the_bad: [16,16], the_omni: [7,7], the_copyme: [1,1] });
+			var tileMap = {};
+	
+			for (var row = 0; row < 18; row++) {
+				for (var col = 0; col < 18; col++) {
+					if (!tileMap[row] || tileMap[row] === 'undefined') {
+							tileMap[row] = [];
+					}	 			
+					if (row > 0 && col > 0) {
+
+						var rand = Math.floor((Math.random()*2)+1); 
+								
+						if (rand == 1) {
+							tileMap[row][col] = 3; 	
+						} else{
+							tileMap[row][col] = 8; 				
+						}
+					} else {
+							tileMap[row][col] = 11; 		
+					}
+						
+				}
+			}
+			var avatars_ = Avatars.find().fetch();
+			//console.log(avatars_); 
+			var tops = 500 / avatars_.length
+			var lefts = 300; 
+			for (var a = 0; a < avatars_.length; a++) {
+				var left = lefts - (a*40); 
+				var top = ((a+1)*tops)+100; 
+				if (top > 800) {
+					lefts = 400; 
+					tops = 1000; 
+				}
+				Avatars.update({_id: avatars_[a]._id}, { $set: { avatar_left: left,  avatar_top: top }}); 
+	
+			}
+			
+			Gameboard.insert({ _id: "1", name: 'copyriot', board: tileMap, the_bad: [16,16], the_omni: [7,7], the_copyme: [1,1] });
 		},
 		remove_gameboard: function() {
 			Gameboard.remove({ _id: "1" });
-		}, 
-		newPostion: function(row, col) {
-				/*rand_row = Math.floor((Math.random()*2)-1); 
-				rand_col = Math.floor((Math.random()*2)-1);
-				new_row = rand_row + row;
-				new_col = rand_col + col; 
-				if (new_row >= 0 && new_col >= 0 && new_row <= 16 && new_col <= 16) { 
-						return [new_row, new_col]; 
-				} else {
-						newPostion(); 
-					}
-
-				return true; */ return "hej"; 
 		}
-
     });
 
 
