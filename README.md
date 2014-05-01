@@ -6,6 +6,6 @@ Occupy was right: we need to get rid of super managers holding the world down. S
 
 Gif animations
 ==============
-The avatar gif animations are from occupyinter.net
+The avatar gif animations are from <a href='http://occupyinter.net/' target='_blank'> occupyinter.net </a>
 Chat help
 
