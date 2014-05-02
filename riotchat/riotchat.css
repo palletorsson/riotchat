@@ -46,6 +46,7 @@ html, body {
 	z-index:1100; 
 	background-color: #E8E8E8 ;
 	padding:4px; 
+	opacity:0.8; 
 }
 
 .ask_omni {
@@ -118,7 +119,33 @@ html, body {
 	background: rgba(0,0,0,0.5)
 }
 
+.about {
+	position:fixed;
+	left:10px; 	
+	z-index:999; 
+}
 
+.about_content {
+	position: fixed;
+	width: 100%; 
+	height: 100%;
+	z-index:10010; 
+	background-color:white; 
+	opacity:0.9; 
+	padding-top:10px; 
+	top:0;
+	left:0; 
+}
+.all_points {
+	position:relative;
+	top: 40px; 
+	left: 330px; 
+}
+.points {
+
+	left: 400px; 
+	width: 500px; 
+}
 .messages {
 	position: fixed;
 	background: none repeat scroll 0 0 #FFFFFF;
@@ -133,9 +160,9 @@ html, body {
 	padding-left: 12px;
 	width: 300px;
 	z-index: 1056;
-	top: 40px;
+	top: 81px;
 	left: 0;
-	height: 90%;
+	height: 80%;
 	overflow: auto;    
 	bottom: 0;
 	background: rgba(200, 200, 200, 0.5);
@@ -144,19 +171,22 @@ html, body {
 .messages_head {
 	position:fixed; 
 	z-index:1057; 
-	background-color: white; 
-	top: 41px;
-	left: 10px;
-	width: 270px;
-    border: 1px solid #777777;
-    border-radius: 4px;
-    box-shadow: 0 3px 6px 4px rgba(0, 0, 0, 0.3);
-    padding: 8px 12px;
-  
+	background-color: yellow;
+	top: 41px; 
+	left: -3px;
+	width: 299px;
+	border: 1px solid #777777;
+	border-radius: 4px;
+	box-shadow: 0 3px 6px 4px rgba(0, 0, 0, 0.3);
+	padding: 8px 12px;
+	font-weight: bold;
+	font-family: monospace;
+	font-size: inherit;
 }
 
 .expanded .messages_head {
 	background-color: black; 
+	width: 600px;
 }
 
 .chat_choose {
@@ -400,7 +430,7 @@ html, body {
     overflow: hidden;
 	min-height: 800px;
 	max-height: 1000px; 
-	background-image:url("img/space_5.jpg");
+	background-image:url("img/backcolor.jpg");
 	background-size:100%;
 	overflow-y: hidden;
    overflow-x: hidden; 
@@ -422,17 +452,17 @@ html, body {
 
 .score_board {
 	position: fixed;
-	top: 310px;
-	left: 810px;
-	-webkit-transform: rotate(58deg) skew(58deg, -32deg) scale(0.85, 1.23);
-	-mozkit-transform: rotate(58deg) skew(58deg, -32deg) scale(0.85, 1.23);
-	-o-transform:  rotate(58deg) skew(58deg, -32deg) scale(0.65, 1.23);
-	-ms-transform:  rotate(58deg) skew(58deg, -32deg) scale(0.65, 1.23);
-	transform:  rotate(58deg) skew(56deg, -32deg) scale(0.65, 1.23);
+	top: 235px;
+	left: 675px;
+	-webkit-transform: rotate(59deg) skew(59deg, -32deg) scale(0.65, 1.23);
+	-mozkit-transform: rotate(59deg) skew(59deg, -32deg) scale(0.65, 1.23);
+	-o-transform:  rotate(59deg) skew(59deg, -32deg) scale(0.65, 1.23);
+	-ms-transform:  rotate(59deg) skew(59deg, -32deg) scale(0.65, 1.23);
+	transform:  rotate(59deg) skew(59deg, -32deg) scale(0.65, 1.23);
 	z-index:100;
 	font-size: 50px;
 	color: white;
-	width:1200px; 
+	width:1000px; 
 }
 	
 .disabling {
@@ -457,8 +487,8 @@ html, body {
 }
 
 .player_big {
-	height: 210px;
-	width:125px; 
+	height: 230px;
+	width: 140px; 
 	z-index: 1000; 
 }
 
@@ -546,4 +576,38 @@ img.npc {
 }
 .trans {
 	margin-bottom:2px;
+}
+
+.example-number {
+  position:relative;
+  width:120px;
+
+  margin:-160px 20px;
+  text-align:center;
+  font:17px/20px Arial, sans-serif;
+  color:#fff;
+  background:#C91F2C;
+  z-index: 1000; 
+}
+
+/* creates the larger triangle */
+.example-number:before {
+  content:"";
+  position:absolute;
+  bottom:-80px;
+  right:0;
+  border-width:0 0 80px 80px;
+  border-style:solid;
+  border-color:transparent #C91F2C;
+}
+
+/* creates the larger triangle */
+.example-number:after {
+  content:"";
+  position:absolute;
+  bottom:-80px;
+  right:43px;
+  border-width:0 0 80px 35px;
+  border-style:solid;
+  border-color:transparent #fff;
 }

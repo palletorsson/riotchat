@@ -93,6 +93,7 @@ if (Meteor.isClient) {
 		Game.c = Game.canvas.getContext('2d');
 		Game.broccoli_kopimi_num = 0; 
 		Game.broccoli_kopimi = {
+			0:" Datalove", 
 			1:" Obtain the Internet",
 			2:" Start using IRC",
 			3:" Group and birth a site",
@@ -233,7 +234,7 @@ if (Meteor.isClient) {
 		Game.copy_me = new Image();
 		Game.copy_me.src = "/img/copytile_iso_.png";
 
-		Game.copy_me_avatar = "/img/droid-evanroth-occupy.gif"
+		Game.copy_me_avatar = "/img/droid-evanroth-occupy.gif";
 
 		Game.copy_me_1 = new Image();
 		Game.copy_me_1.src = "/img/copytile_iso1.png";
@@ -256,6 +257,12 @@ if (Meteor.isClient) {
 		Game.eye = new Image();
 		Game.eye.src = "/img/eye_tran.png";
 		
+		Game.red_marker = new Image();
+		Game.red_marker.src = "/img/copytile_current.png";
+		
+		Game.black_marker = new Image();
+		Game.black_marker.src = "/img/dark_cur.png";
+		
 		Game.positionX_net_previous = 0; 
 		Game.positionY_net_previous = 0;
 
@@ -270,13 +277,13 @@ if (Meteor.isClient) {
 		Game.resetTileCount(); 
 		Game.your_avatar_id = "";
 
-		Game.draw = function(tileMap) {							   	
+		Game.draw = function(tileMap, the_bad, the_copyme) {							   	
 			Game.c.clearRect (0, 0, Game.c.width, Game.c.height);
 
 			var i = 0; 
 			for (var row = 0; row < Game.grid.width; row++) {
 				for (var col = 0; col < Game.grid.height; col++) {
-
+					
 					var tilePositionX = (row - col) * Game.tile.height;
 
 					// Center the grid horizontally
@@ -295,56 +302,72 @@ if (Meteor.isClient) {
 					 * 9: unused
 					 * 10 - 20 environment    			 
 					 */
+					if(tileMap) {
+						if ( tileMap[row] != null && tileMap[row][col] != null) {
+							
+							if ( tileMap[row][col] == 1 ) {
+								Game.tiles_green = Game.tiles_green + 1; 
+								Game.c.drawImage(Game.green, Math.round(tilePositionX), Math.round(tilePositionY), Game.tile.width, Game.tile.height);	
+							} else if ( tileMap[row][col] == 2 ) {
+								Game.tiles_green = Game.tiles_green + 1; 
+								Game.c.drawImage(Game.green_current, Math.round(tilePositionX), Math.round(tilePositionY), Game.tile.width, Game.tile.height);	
+								Game.tiles_copy_me = Game.tiles_copy_me + 0.1; 
+							} else if ( tileMap[row][col] == 5) {
+								Game.tiles_copy_me = Game.tiles_copy_me + 1.5; 
+								Game.c.drawImage(Game.copy_me, Math.round(tilePositionX), Math.round(tilePositionY), Game.tile.width, Game.tile.height);
+								var newItem = i;	
+								Game.network[newItem] =  { "positionX": Math.round(tilePositionX)+32, "positionY":Math.round(tilePositionY)+32  };
+							} else if ( tileMap[row][col] == 3 ) {
+								Game.tiles_copy_me = Game.tiles_copy_me + 1; 
+								Game.c.drawImage(Game.copy_me_1, Math.round(tilePositionX), Math.round(tilePositionY), Game.tile.width, Game.tile.height);	
+							} else if ( tileMap[row][col] == 4) {
+								Game.tiles_copy_me = Game.tiles_copy_me + 0.5; 
+								Game.c.drawImage(Game.copy_me_2, Math.round(tilePositionX), Math.round(tilePositionY), Game.tile.width, Game.tile.height);
+							} else if ( tileMap[row][col] == 8 ) {
+								Game.c.drawImage(Game.black, Math.round(tilePositionX), Math.round(tilePositionY), Game.tile.width, Game.tile.height);	
 									
-					if ( tileMap[row] != null && tileMap[row][col] != null) {
-						
-						if ( tileMap[row][col] == 1 ) {
-							Game.tiles_green = Game.tiles_green + 1; 
-							Game.c.drawImage(Game.green, Math.round(tilePositionX), Math.round(tilePositionY), Game.tile.width, Game.tile.height);	
-						} else if ( tileMap[row][col] == 2 ) {
-							Game.tiles_green = Game.tiles_green + 1; 
-							Game.c.drawImage(Game.green_current, Math.round(tilePositionX), Math.round(tilePositionY), Game.tile.width, Game.tile.height);	
-							Game.tiles_copy_me = Game.tiles_copy_me + 0.1; 
-						} else if ( tileMap[row][col] == 5) {
-							Game.tiles_copy_me = Game.tiles_copy_me + 1.5; 
-							Game.c.drawImage(Game.copy_me, Math.round(tilePositionX), Math.round(tilePositionY), Game.tile.width, Game.tile.height);
-							var newItem = "item" + i;	
-							Game.network[newItem] =  { "positionX": Math.round(tilePositionX)+32, "positionY":Math.round(tilePositionY)+32  };
-    					} else if ( tileMap[row][col] == 3 ) {
-							Game.tiles_copy_me = Game.tiles_copy_me + 1; 
-							Game.c.drawImage(Game.copy_me_1, Math.round(tilePositionX), Math.round(tilePositionY), Game.tile.width, Game.tile.height);	
-						} else if ( tileMap[row][col] == 4) {
-							Game.tiles_copy_me = Game.tiles_copy_me + 0.5; 
-							Game.c.drawImage(Game.copy_me_2, Math.round(tilePositionX), Math.round(tilePositionY), Game.tile.width, Game.tile.height);
-						} else if ( tileMap[row][col] == 8 ) {
-							Game.c.drawImage(Game.black, Math.round(tilePositionX), Math.round(tilePositionY), Game.tile.width, Game.tile.height);	
-								
-						 	var newItem = "item" + i;	
-							Game.center_work[newItem] =  { "positionX": Math.round(tilePositionX)+32, "positionY":Math.round(tilePositionY)+32  };
-							Game.tiles_bad = Game.tiles_bad + 0.2; 					
-						} else if ( tileMap[row][col] == 7 ) {
-							Game.c.drawImage(Game.black_2, Math.round(tilePositionX), Math.round(tilePositionY), Game.tile.width, Game.tile.height);						
-							Game.tiles_bad = Game.tiles_bad + 0.1; 
-						} else if ( typeof (tileMap[row][col]) == "string"  ) {
-							Game.c.drawImage(Game.green_current, Math.round(tilePositionX), Math.round(tilePositionY), Game.tile.width, Game.tile.height);	
-							Game.tiles_green = Game.tiles_green + 1; 
-						} else if (tileMap[row][col] == 11 ) {
-							Game.c.drawImage(Game.red, Math.round(tilePositionX), Math.round(tilePositionY), Game.tile.width, Game.tile.height);	
-							 
-						} else  {
-							Game.c.drawImage(Game.red, Math.round(tilePositionX), Math.round(tilePositionY), Game.tile.width, Game.tile.height);	
+								var newItem = i;	
+								Game.center_work[newItem] =  { "positionX": Math.round(tilePositionX)+32, "positionY":Math.round(tilePositionY)+32  };
+								Game.tiles_bad = Game.tiles_bad + 0.2; 					
+							} else if ( tileMap[row][col] == 7 ) {
+								Game.c.drawImage(Game.black_2, Math.round(tilePositionX), Math.round(tilePositionY), Game.tile.width, Game.tile.height);						
+								Game.tiles_bad = Game.tiles_bad + 0.1; 
+							} else if ( typeof (tileMap[row][col]) == "string"  ) {
+								Game.c.drawImage(Game.green_current, Math.round(tilePositionX), Math.round(tilePositionY), Game.tile.width, Game.tile.height);	
+								Game.tiles_green = Game.tiles_green + 1; 
+							} else if (tileMap[row][col] == 11 ) {
+								Game.c.drawImage(Game.red, Math.round(tilePositionX), Math.round(tilePositionY), Game.tile.width, Game.tile.height);	
+								 
+							} else  {
+								Game.c.drawImage(Game.red, Math.round(tilePositionX), Math.round(tilePositionY), Game.tile.width, Game.tile.height);	
+							}
+						} else {
+							Game.c.drawImage(Game.dark, Math.round(tilePositionX), Math.round(tilePositionY), Game.tile.width, Game.tile.height);	
+							Game.tiles_natural = Game.tiles_natural + 1; 
 						}
-					} else {
-						Game.c.drawImage(Game.dark, Math.round(tilePositionX), Math.round(tilePositionY), Game.tile.width, Game.tile.height);	
-						Game.tiles_natural = Game.tiles_natural + 1; 
+						i = i + 1; 	
+						if(the_copyme) {
+							if ( row == the_copyme[0] && col == the_copyme[1]) {
+								Game.c.drawImage(Game.red_marker, Math.round(tilePositionX), Math.round(tilePositionY), Game.tile.width, Game.tile.height);
+								the_copyme = false; 	
+							} 
+						}
+						if(the_bad) {
+							if ( row == the_bad[0] && col == the_bad[1]) {
+								Game.c.drawImage(Game.black_marker, Math.round(tilePositionX), Math.round(tilePositionY), Game.tile.width, Game.tile.height);	
+								the_bad = false; 
+							} 
+						}
+
 					}
-					i = i + 1; 	
 				}
 			}
-		
+					
+		Game.network = _.shuffle(Game.network);
 
 		Game.c.lineWidth = 2;
-		Game.c.strokeStyle='rgba(255,255,255,0.6)'; 
+
+		Game.c.strokeStyle= 'rgba('+Math.floor(Math.random()*255)+','+Math.floor(Math.random()*255)+','+Math.floor(Math.random()*255)+',0.7)'; 
 		Game.c.beginPath()
 		
 		var rand_pos_net = Math.floor((Math.random()*6)-3);
@@ -356,14 +379,15 @@ if (Meteor.isClient) {
 			Game.c.lineTo(value.positionX+32+rand_pos_net, value.positionY-16+rand_pos_net);			
 		});	
 		Game.c.closePath();
-		Game.c.stroke()
+		Game.c.stroke();
 		
+		Game.network_temp = Game.network;
 		Game.network = {}
-
-		Game.c.strokeStyle='rgba(0,0,0,0.3)';  
+		Game.c.strokeStyle='rgba(119,136,153,0.5)';  
+	 
 		Game.c.beginPath()
 		var rand_pos_center = Math.floor((Math.random()*200)+600); 
-		Game.c.drawImage(Game.eye, rand_pos_center-32, rand_pos_center-32);	
+		Game.c.drawImage(Game.eye, rand_pos_center-32, rand_pos_center-48);	
 		$.each(Game.center_work, function( index, value ) {
 			Game.c.moveTo(rand_pos_center, rand_pos_center);
 			Game.c.lineTo(value.positionX+32, value.positionY-16);			
@@ -379,7 +403,7 @@ if (Meteor.isClient) {
 		var all = Game.tiles_bad + Game.tiles_green + Game.tiles_copy_me; 
 		var good = ((Game.tiles_copy_me - Game.tiles_bad) / all) * 100;
 
-		if (good > 20) {	
+		if (good > 30) {	
 			$(".disabling").show().html("<h5>Datalove: We won! Just kidding, Lets take the battle to the next level. Kopimi!</h5>"); 
 			$(".score_board").html("<h5>Datalove: We won! Just kidding, Lets take the battle to the next level. Kopimi!</h5>"); 
 			Meteor.setTimeout(function(){				
@@ -388,7 +412,7 @@ if (Meteor.isClient) {
 				$(".disabling").hide(); 
 			}, 5000);	
 			
-		} else {		
+		} else {	
 			$(".score_board").html("<h3>Datalove: "+good.toFixed(2)+ "% | "+ Game.broccoli_kopimi[Game.broccoli_kopimi_num]) +"</h3>"; 	
 		}
 		
@@ -405,21 +429,66 @@ if (Meteor.isClient) {
 		element_.html('<img src="img/marker_.png" />'); 
 	}
 		
+		Game.shuffle = function(array)  {
+		   for (var i = array.length - 1; i > 0; i--) {
+				var j = Math.floor(Math.random() * (i + 1));
+				var temp = array[i];
+				array[i] = array[j];
+				array[j] = temp;
+			}
+			return array;
+		}
 		
 		Game.init_interval = true;
+		 							   	
+		Game.ismoving = true; 
+		Game.pausId = 0;
+		Game.timoutGameId = 0;
+		Game.animate_players = function() {
+				Meteor.setTimeout(function(){
+					Game.pausId = Meteor.setInterval(function(){
+						Game.c.strokeStyle= 'rgba('+Math.floor(Math.random()*255)+','+Math.floor(Math.random()*255)+','+Math.floor(Math.random()*255)+',0.5)'; 
 		
- 		//Message
+						Game.network_temp = _.shuffle(Game.network_temp);
+
+						var rand_pos_net = Math.floor((Math.random()*6)-3);
+						Game.c.beginPath()
+					
+						$.each(Game.network_temp, function( index, value ) {
+							if (index == 0) {
+								Game.c.moveTo(value.positionX, value.positionY);
+							}
+							Game.c.lineTo(value.positionX+32+rand_pos_net, value.positionY-16+rand_pos_net);			
+						});
+							
+						Game.c.closePath();
+						Game.c.stroke();	
+					}, 1300);
+					Game.ismoving = false; 
+					clearTimeout(Game.timeoutGameId); 
+				}, 23000);
+				if (Game.ismoving) {
+					console.log("mjau"+ Game.ismoving)
+					clearTimeout(Game.timeoutGameId);   
+					clearInterval(Game.pausId);
+					Game.pausId  = 0;
+					Game.timoutGameId = 0;
+				} 	
+			}
+		
+ 		//Messages
 		HandleMessage.ScrollDown = function() {
 			var chatDiv = $(".messages");
 			chatDiv.scrollTop(chatDiv.prop("scrollHeight"));
 		}; 		
 		
 		Game.urlify = function(text) {
-			var urlRegex = /(https?:\/\/[^\s]+)/g;
-			return text.replace(urlRegex, function(url) {
-				return '<a href="' + url + '"  target="_blank">' + url + '</a>';
-			})
-
+			if (text) {
+				var urlRegex = /(https?:\/\/[^\s]+)/g;
+				return text.replace(urlRegex, function(url) {
+					return '<a href="' + url + '"  target="_blank">' + url + '</a>';
+				})
+			}
 		}; 
 		// 
 		Meteor.setTimeout(function(){
@@ -427,19 +496,17 @@ if (Meteor.isClient) {
 			if (!is_settings) {
 				Meta_setting.insert({ _id: "1", topic:'piracy is fun', channel: "riotchat" });
 			}
-		}, 3000);
+		}, 3000);		
+		if (Settings.encryption) {
+			HandleMessage.helpEnc = function(message) {
+				alert(message);	console.log(message)
+				return message.ciphertext.toString(CryptoJS.enc.Base64);
+			}
 
-		Session.set("showchat", true); 			
-		
-		HandleMessage.helpEnc = function(message) {
-			alert(message);	console.log(message)
-            return message.ciphertext.toString(CryptoJS.enc.Base64);
-        }
-
-        HandleMessage.helpDec = function (message) {
-            return CryptoJS.enc.Base64(message);
-      	}
-
+			HandleMessage.helpDec = function (message) {
+				return CryptoJS.enc.Base64(message);
+			}
+		}
 	
 		Session.set("showchat", true); 
 	});
@@ -465,11 +532,15 @@ if (Meteor.isClient) {
 
 	Template.gameboard.gameboard= function () {
 		game = Gameboard.findOne({});	
-		return game;		
+		if(game) { 
+			return game;		
+		}
 	}	
 	
 	Handlebars.registerHelper("board_key", function(board) {
-		return board;  
+		if(board) { 
+			return board; 
+		}  
 	});		
 	
 	Template.gameboard.rendered = function () {
@@ -479,7 +550,9 @@ if (Meteor.isClient) {
 			} else {
 				var gamemap = data;	
 				tileMap = gamemap.board;
-				Game.draw(tileMap);
+				if (tileMap) {
+					Game.draw(tileMap, data.the_bad, data.the_copyme); 
+				}
 				$(".disabling").hide(); 
 			}
 		});
@@ -496,12 +569,20 @@ if (Meteor.isClient) {
 						} else {
 						var gamemap = data;	
 						tileMap = gamemap.board;
-						Game.draw(tileMap); 
+						Game.draw(tileMap, data.the_bad, data.the_copyme); 
+						// Game.ismoving = true; 
+						// Game.animate_players();  
 						Game.init_interval = true;
 						}
 					});
 				}, 3000); 
+				
+				
+				
 			}
+			
+			
+			
 		},
 		
  		'click .the_canvas': function(e) {	
@@ -526,7 +607,6 @@ if (Meteor.isClient) {
 		
 						row = Math.round(row / Game.tile.height);
 						col = Math.round(col / Game.tile.height);
-						console.log(row + " " +col)
 						
 						// Check the boundaries!
 					
@@ -552,10 +632,11 @@ if (Meteor.isClient) {
 								if (err) {
 									console.log(err);
 								} else {
-					
-									Game.draw(data);
+									console.log()
+									Game.draw(data.board, data.the_bad, data.the_copyme);
 								}
 							});
+							// Game.ismoving = true; 
 					
 						}
 					
@@ -574,8 +655,10 @@ if (Meteor.isClient) {
 	
 	// Messages function: 
 	Template.meta_setting.meta = function () {	
-		var meta = Meta_setting.findOne({}); 	
-  		return meta;
+		var meta = Meta_setting.findOne({});
+		if (meta) { 	
+			return meta;
+		}
 	};
 	
 	Meteor.subscribe("messages");
@@ -589,7 +672,6 @@ if (Meteor.isClient) {
 
 	Template.messages.messages = function () {	
 		if (Settings.encryption) {
-			
 			var today = new Date;
 				today = today.valueOf();
 			var yesterday = new Date
@@ -613,21 +695,31 @@ if (Meteor.isClient) {
 	   			
 			});
 
-				
+			
 			items.forEach(function(item) {
 				// item.message = Game.urlify(item.message); 
 			});
 			return items; 
 
 		} else {
+			
 			var items = Messages.find({}, {sort: {time : -1}, limit: 100 }).fetch();
-			items = items.sort(function(a,b) { return parseInt(a.time) - parseInt(b.time) } );
-			//items.forEach(function(item) {
-				//item.message = Game.urlify(item.message); 
-			//});
-			return items; 
+			if (items) {
+				items = items.sort(function(a,b) { return parseInt(a.time) - parseInt(b.time) } );
+				items.forEach(function(item) {
+					item.message = Game.urlify(item.message); 
+				});
+				if (items.length > 0) { 
+					var eml = $("#msg_"+items[items.length - 1].owner); 
+					eml.html("<div class='example-number'>"+items[items.length - 1].message+"</div>");
+				}
+				
+				return items; 
+				
+			} else {
+				return {}; 
+			}
 		}
-  		
 	};
 
 	
@@ -642,7 +734,6 @@ if (Meteor.isClient) {
 	Template.chat.showchat = function () {
 			return Session.get("showchat"); 
 		}
-
 
 	Template.chat.irc_mode = function () {
 		return Session.get("irc_mode"); 
@@ -720,7 +811,6 @@ if (Meteor.isClient) {
 		return formated; 
 	});		
 
-
 	Template.chat_message.events({
 	    'keydown' : function (e, t) {
     		if (e.which === 13) { 			
@@ -729,9 +819,10 @@ if (Meteor.isClient) {
 				avatar_img = "default_avatar.png",
 				username = user.username || "_nano",
 				message_form = e.target;
-
+				
 				HandleMessage.message = message_form.value 
-				console.log("start"+HandleMessage.message);
+						
+				// console.log("start"+HandleMessage.message);
 				// message = message.replace(/<(?:.|\n)*?>/gm, '');
 				
 				if (HandleMessage.message.length > 1 && $.trim(HandleMessage.message) != '') {	
@@ -754,7 +845,6 @@ if (Meteor.isClient) {
 					if (HandleMessage.message.trim()[0] == "/") {			
 						var splited = HandleMessage.message.split(" "); 
 						if (splited[0] == "/topic") {
-							console.log("toic");
 							var topic = ''; 
 								for (var j = 1; j < splited.length; j++) {
 									topic = topic + " " + splited[j]; 
@@ -767,8 +857,7 @@ if (Meteor.isClient) {
 							var question = ''; 
 								for (var g = 1; g < splited.length; g++) {
 									question = question + " " + splited[g]; 
-								}
-					
+								}					
 							Meteor.call('fetchFromService', question, function(err, respJson) {
 								if(err) {
 									console.log("error occured on receiving data on server. ", err );
@@ -804,7 +893,8 @@ if (Meteor.isClient) {
 						} else {
 							HandleMessage.message = ''
 						}
-					} // end of console 				
+					} // end of console 
+									
 					if (HandleMessage.message.length > 1) {
 						console.log("end"+HandleMessage.message)
 						
@@ -832,8 +922,7 @@ if (Meteor.isClient) {
 							});
 						}		
 					}
-						message_form.value = '';
-					
+					message_form.value = '';
 					Meteor.setTimeout(function(){
 							HandleMessage.ScrollDown() 
 							$("#message").focus(); 
@@ -865,9 +954,39 @@ if (Meteor.isClient) {
 		{name: "mark-jenkins-occupy", type:"gif"},
 		{name: "jesus-evanroth-occupy", type:"gif"},
 		{name: "unicorn-evanroth-occupy", type:"gif"},
-		{name: "occupy-everything", type:"gif"},
+		//{name: "occupy_everything", type:"gif"},
 		{name: "systaime", type:"gif"},
 		{name: "dog", type:"gif"},
+		{name: "moonwalk-evanroth-occupy", type:"gif"},
+		{name: "peretti-occupy-2", type:"gif"},
+		{name: "snoop-evanroth-occupy", type:"gif"},
+		{name: "olia-dragan-occupy", type:"gif"},
+		{name: "jeanluc-evanroth-occupy", type:"gif"},		
+		{name: "chunli-evanroth-occupy", type:"gif"},
+		{name: "nyan_cat", type:"gif"},
+		{name: "olia-dragan-occupy", type:"gif"}, 
+		{name: "banana-evanroth-occupy", type:"gif"}, 
+		{name: "beyonce", type:"gif"},
+		{name: "bugs_troll_mrqmarx", type:"gif"},
+		{name: "bowlers-evanroth-occupy", type:"gif"},
+		{name: "classwar-ahead_goulassoflosy", type:"gif"},
+		{name: "cxzy-dear-maslow-2", type:"gif"},
+		{name: "bowlers-evanroth-occupy", type:"gif"},
+		{name: "denkmaltanzoccupy", type:"gif"},
+		{name: "doucheCat", type:"gif"},
+		{name: "dumpfm-LCKY-capitalismidgi_trans", type:"gif"},
+		{name: "enough-is-enough", type:"gif"},
+		{name: "frodo-evanroth-occupy", type:"gif"},
+		{name: "graceypoo-Protest-Gif_gracemcevoy", type:"gif"},
+		{name: "greencybergothoccupy", type:"gif"},
+		{name: "occupyinternet", type:"gif"},
+		{name: "occupyinternet2", type:"gif"},
+		{name: "occupy-net-evanroth-03", type:"gif"},
+		{name: "oohla-occupy", type:"gif"},
+		{name: "snoop-evanroth-occupy", type:"gif"},
+		{name: "telegram-sam", type:"gif"},
+		{name: "txt-minimi_makemoney", type:"gif"},
+		{name: "wPEWe", type:"gif"},
 	]
 
 
@@ -1011,13 +1130,64 @@ if (Meteor.isClient) {
 			}
 	});
 
-
-
-
 	Template.secret_form.changing_secret = function () {
 		return Session.get("changing_secret"); 
 	};
 
+	// about template 
+	// $(".disabling").hide(); 
+	
+	Template.about.show_about = function () { 
+		return Session.get("show_about");
+	};  
+	
+	Template.about.about = function () {
+		var about_object = []; 
+		about_object.points = 
+		[
+			{ point: {	"title": 	"Here is Riotchat", 
+						"content":	"Riot Chat is a Twitter-IRC-game remix. <br>  Riot Chat is an homage to kopimi (copyme), a symbol showing that you want to be copied, and a sandbox for an anti-surveillance communication protocol. <br> Occupy was right: we need to get rid of super managers holding the world down. Since revolutions constantly fail in the streets, we must simultaneously continue to riot the Internet.  " , 
+						"media":	"img/kopimi.gif" 
+					 } 
+			},
+			{ point: {	"title": 	"Occypy internet gif animations", 
+						"content":	"The avatar gif animations are from the riot of Occypy internet, find more information here <a href='http://occupyinter.net/' target='_blank'> occupyinter.net </a>"					 
+					 } 
+			},  
+			{ point: {	"title": 	"The Chat and OmniHal", 
+						"content":	"To talk to OmniHal, the chat bot, type /omnihal and then your message. OmniHal has a young brain. Feed OmniHal with text i the top right corner. <br> Change the topic of the chat by typing /topic and then the new topic" , 
+
+					  } 
+			}, 
+			{ point: {	"title": 	"OmniHal", 
+						"content":	"" , 
+
+					  } 
+			}, 
+			{ point: {	"title": 	"The Game", 
+						"content":	"Help expand the territory of kopimi (copyme) pyramids by getting rid of eyeballs box. Click, move and communicate." , 
+
+					  } 
+			}, 
+			{ point: {	"title": 	"Fork on github", 
+						"content":	"Fork the project <a href='https://github.com/palletorsson/riotchat' target='_blank'> here </a> ", 
+					  } 
+			}			
+		];
+
+		return about_object.points;	
+	};
+	
+	Template.about.events({
+		'click #show_about': function (e, t) {
+				Session.set("show_about", true);
+			},	
+		'click #close_about': function (e, t) {
+				Session.set("show_about", false);
+			}	
+	});
+	
+	
 } // end of isClient
 
 if (Meteor.isServer) {
@@ -1190,8 +1360,8 @@ if (Meteor.isServer) {
 			var new_good_col = rand_col + current_good_col; 
 
 		
-			if (new_good_row < 0 || new_good_row > 16) {new_good_row=3}
-			if (new_good_col < 0 || new_good_col > 16) {new_good_col=3}
+			if (new_good_row < 0 || new_good_row > 16) {new_good_row=4}
+			if (new_good_col < 0 || new_good_col > 16) {new_good_col=4}
 		
 			if (!tileMap[new_good_row] || tileMap[new_good_row] === 'undefined') {
 				tileMap[new_good_row] = [];
@@ -1204,21 +1374,20 @@ if (Meteor.isServer) {
 				if (!tileMap[new_good_row+square_postions[i]] || tileMap[new_good_row+square_postions[i]] === 'undefined') {
 								tileMap[new_good_row+square_postions[i]] = [];
 							}	
-					var walk_value = tileMap[new_good_row+square_postions[i]][new_good_col+square_postions[j]]; 
+				var walk_value = tileMap[new_good_row+square_postions[i]][new_good_col+square_postions[j]]; 
 				
-					if ( walk_value == 2 )  {
+				if ( walk_value == 2 )  {
 						var can_move = true; 							
 					} else if (walk_value == 7 || walk_value == 8) {
 						var can_hit = true; 
-													
 						new_good_row = new_good_row -1; 
 						new_good_col = new_good_col -1;			
 					}
 				}
 			} 
 
-			if (new_good_row <= 0 || new_good_row > 16) {new_good_row=3}
-			if (new_good_col <= 0 || new_good_col > 16) {new_good_col=3}
+			if (new_good_row <= 0 || new_good_row > 16) {new_good_row=5}
+			if (new_good_col <= 0 || new_good_col > 16) {new_good_col=5}
 			 			
 			if (can_move) { 
  				if (tileMap[new_good_row][new_good_col] == 3) {
@@ -1233,16 +1402,31 @@ if (Meteor.isServer) {
 					tileMap[new_good_row][new_good_col] = 3;
 				}
 				
-			} else if (can_hit) {
-				tileMap[new_good_row][new_good_col] = 5;
-				
+			} 
+			if (can_hit) {
+				if (new_row < 13 && new_col < 13) {
+					var rand = Math.floor( (Math.random()*5)+1);
+					if (rand == 1 ) { 
+						tileMap[new_row][new_col] = 3; 
+						tileMap[new_good_row][new_good_col] = 3;
+					} else if (rand == 3) {
+						tileMap[new_row][new_col]  = 4; 
+						tileMap[new_good_row][new_good_col] = 8;
+					}  else if (rand == 4) {
+						tileMap[new_row][new_col] = 8; 
+						tileMap[new_good_row][new_good_col] = 4;
+					} else {
+						tileMap[new_row][new_col] = 5; 
+						tileMap[new_good_row][new_good_col] = 3; 							
+					}		
+			}
 				new_good_row = current_good_row-1;
 				new_good_col = current_good_col-1; 
 			} 
 			
 			Gameboard.update({ _id: "1" }, { $set: { the_bad: [new_row, new_col], the_copyme: [new_good_row, new_good_col], board: tileMap }});
-
-			return tileMap; 
+			var local_game = { the_bad: [new_row, new_col], the_copyme: [new_good_row, new_good_col], board: tileMap }
+			return local_game; 
 
 			 			
 		}, 
@@ -1265,7 +1449,7 @@ if (Meteor.isServer) {
 						var rand = Math.floor((Math.random()*2)+1); 
 								
 						if (rand == 1) {
-							tileMap[row][col] = 3; 	
+							tileMap[row][col] = 2; 	
 						} else{
 							tileMap[row][col] = 8; 				
 						}

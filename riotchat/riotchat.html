@@ -1,75 +1,25 @@
 <head>
-	
-
-	
-	<script src="/js/md5.js"></script>
-	<script src="/js/aes.js"></script>
-    <script> var JsonFormatter = {
-        stringify: function (cipherParams) {
-            // create json object with ciphertext
-            var jsonObj = {
-                ct: cipherParams.ciphertext.toString(CryptoJS.enc.Base64)
-            };
-
-            // optionally add iv and salt
-            if (cipherParams.iv) {
-                jsonObj.iv = cipherParams.iv.toString();
-            }
-            if (cipherParams.salt) {
-                jsonObj.s = cipherParams.salt.toString();
-            }
-
-            // stringify json object
-            return jsonObj;
-        },
-
-        parse: function (jsonStr) {
-            // parse json string
-            var jsonObj = jsonStr;
-			
-
-            // extract ciphertext from json object, and create cipher params object
-            var cipherParams = CryptoJS.lib.CipherParams.create({
-                ciphertext: CryptoJS.enc.Base64.parse(jsonObj.ct)
-            });
-
-            // optionally extract iv and salt
-            if (jsonObj.iv) {
-                cipherParams.iv = CryptoJS.enc.Hex.parse(jsonObj.iv)
-            }
-            if (jsonObj.s) {
-                cipherParams.salt = CryptoJS.enc.Hex.parse(jsonObj.s)
-            }
-
-            return cipherParams;
-        }
-    };
-	</script> 
-
 	<title>Riot chat</title>
 </head>
 
 <body>
-<div class="sound_container">
+<div class="sound_container"><br>
   <div class="sound_div">
     <iframe width="300" height="300" 
-      src="https://www.youtube.com/embed/998P6HEzCdI?list=PL487B5B4B3355F521">
+      src="https://www.youtube.com/embed/omfiVkkJ1OU?list=PLoXCYuzSVLLnVDTu0IDaPswE4f8DnbdyX">
     </iframe>
   </div>
 </div>
 	<div class="disabling"> you </div>
+	<div class="example-number"> you </div>
 	{{> admin_panel}}
     {{> header}}
 	<div>
-	
 	</div>
 	<div>
 		{{> gameboard}}
 		{{> avatarList}}
-		
 	</div>
-
-
 </body>
 
 
@@ -81,7 +31,11 @@
 	<div class="navbar navbar-default navbar-fixed-top">
 		<div class="navbar-inner">
 		    <div class="container"> 	
-			<ul class="nav navbar-nav">  
+			<ul class="nav navbar-nav">
+				
+				<li class="about">
+					{{> about}}
+				</li>
 		      	<li>
 			{{#if currentUser}}	
 				{{> chat}}		
@@ -90,7 +44,6 @@
 			{{/if}}
 				</li>
 		    </ul>      
-		
 		    <ul class="nav navbar-nav navbar-left pull-left">
 		       	<li>
 					{{#if currentUser}}
@@ -106,6 +59,30 @@
 			</div>	
 		</div>	
 	</div>	
+</template>
+
+<template name="about">
+{{#if show_about}}
+	<div class="about_content"> 
+		<div class="all_points">
+		<ul class="points">	
+		<a id="close_about">( close )</a>	
+			{{ #each about }}
+			<li>
+				<h4> {{ point.title }} </h4>
+				<p>	{{{ point.content }}} 	
+					{{#if point.media}}	<div> <img style="width:100px;" src='{{ point.media }}'> </div>
+					{{/if}}
+				</p>
+			</li>
+			{{/each}}
+			<a id="close_about">( close )</a>
+		</ul>
+		</div>
+	</div>
+{{else}}
+	<a id="show_about">About</a>
+{{/if}}	
 </template>
 
 <template name="meta_setting">
@@ -149,7 +126,7 @@
 			  	<button class="btn btn-primary" id="change">change</button>
 			</form>
 		{{else}}
-			<a  id="edit" class="login-link-text">
+			<a id="edit" class="login-link-text">
 				{{#if avatar}}
 	       			You ▾
 				{{else}}
@@ -166,7 +143,7 @@
 	{{#each avatars}}
 		<div class="checkbox_container">
 			<div>  
-				<a href="#" class="choose_avatar" id="{{name}}" name="{{name}}.{{type}}"><img src="img/{{name}}.{{type}}"  class="form_img"></a>
+				<a class="choose_avatar" id="{{name}}" name="{{name}}.{{type}}"><img src="img/{{name}}.{{type}}"  class="form_img"></a>
 			</div>
 	 	</div>
 	{{/each}}
@@ -178,7 +155,7 @@
 		<div class="perspective_grid">
 		{{#each avatars}}
 			<div class="avatar_image" id="div_{{avatar_id}}">
-				<div class="indicator_img_div player" style="top:{{avatar_top}}px; left:{{avatar_left}}px"></div> 
+				<div class="indicator_img_div player" id="msg_{{avatar_id}}" style="top:{{avatar_top}}px; left:{{avatar_left}}px"></div> 
 				<div class="indicator player_name player" style="top:{{avatar_top}}px; left:{{avatar_left}}px">{{avatar_name}}</div> 
 				
 				<div class="player_pos player_pos_img" style="top:{{avatar_top}}px; left:{{avatar_left}}px"><img src="img/kopimi_player.png" alt="{{avatar_name}}" > </div> 
@@ -207,7 +184,7 @@
 {{#if showchat}}	
 	<ul class="nav navbar-nav">
 	 <li class="dropdown chat_choose">
-          <a href="#" class="dropdown-toggle" data-toggle="dropdown">Chat mode<b class="caret"></b></a>
+          <a class="dropdown-toggle" data-toggle="dropdown">Chat mode<b class="caret"></b></a>
           <ul class="dropdown-menu">		
 			<li><a id="irc_mode">Irc Mode <b class="caret"></b></a></li>
 			<li><a id="hidechat">Hidden <b class="caret"></b></a></li>
@@ -217,14 +194,11 @@
 	{{#if talk_to_omnihal}}
 	<div class="onmi_overlay" id="onmiHal_container">
 		<div id='remove_omni'> <img src="img/omni.gif" style="width:60px; float:left;"/> 
-			
 			<input type='text' class="ask_omni" id='ask_omni'> 
-			<div id="omni_answer">-</div>  
-			<div class="pull-right">( <a  id='remove_omni' > close </a> ) 
-			
-			
-		</div> 
-	</div>	
+			<div id="omni_answer">~</div>  
+			<div class="pull-right">( <a  id='remove_omni' > close </a> ) 	
+			</div> 
+		</div>	
 	</div>
 	{{else}}
 	<div class="onmi_overlay">
@@ -262,10 +236,10 @@
 </template>
 
 <template name="messages">
-	<div class="messages_head"> 	{{> meta_setting}}	</div> 
+	<div class="messages_head"> {{> meta_setting}} </div> 
 	{{#each messages}}
 		<div class="media">
-        	<div class="pull-left avarar_name_time" href="#">
+        	<div class="pull-left avarar_name_time">
 				<img src="img/{{avatar_img}}" alt="{{name}}" style="width:50px; height:50px;">	
         	</div>
 	        <div class="media-body" id="{{message_id}}"> 
@@ -274,8 +248,6 @@
 						<small> {{prettifyDate time}} </small>
 					</span> 
 					<span class="chat_name"> {{name}}: </span>
-
-				
 						{{#if currentUser}}
 							<span class="remove"></span>
 						{{/if}}
@@ -288,7 +260,6 @@
 
 <template name="chat_message">
 	<div class="chat_form">
-
 		{{#with chatuser}}
 			 {{user}}:
 		{{/with}}
@@ -296,7 +267,6 @@
 			<input type="text" class="form-control" id="message"/> 	
 		</div>	
     </div>
-
 </template>
 
 <template name="chat_not_logged_in">
@@ -306,9 +276,8 @@
 </template>
 
 <template name="gameboard">	
-	
  <div class="score_board">
-	{{ board_key gameboard.name }}
+
 </div>
 	
  <div class="gameboard">
