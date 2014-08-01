@@ -1231,8 +1231,8 @@ if (Meteor.isServer) {
   
 		return  Gameboard.find({_id:"1"});
 	});
+	Meteor.setInterval(function(){Meteor.call("aiAction");}, 3000);
 	
-
 
 	// communication with omniHal API
 	Meteor.methods({
@@ -1267,6 +1267,32 @@ if (Meteor.isServer) {
 				console.log("Response issue: ", result.statusCode);
 				throw new Meteor.Error(result.statusCode, errorJson.error);
 			}
+		},
+		aiAction: function() {
+			var the_game = Gameboard.findOne({});
+			var tileMap = the_game.board; 
+			// Bad ai ------------------------------ >
+
+			var bad_pos = the_game.the_bad; 
+			var bad_obj = Meteor.call("bad_ai", tileMap, bad_pos);
+			tileMap = bad_obj.board; 
+			var new_bad_row = bad_obj.the_bad[0]; 
+			var new_bad_col = bad_obj.the_bad[1]; 
+			
+			// Good ai ----------------------------------- >
+			
+			var good_pos = the_game.the_copyme; 
+			good_obj  = Meteor.call("good_ai", tileMap, good_pos);
+			tileMap = good_obj.board;
+			var new_good_row = good_obj.the_good[0]; 
+			var new_good_col = good_obj.the_good[1]; 
+			
+			// Update Gameboard and return game
+			
+			Gameboard.update({ _id: "1" }, { $set: { the_bad: [new_bad_row, new_bad_col], the_copyme: [new_good_row, new_good_col], board: tileMap }});
+			var local_game = { the_bad: [new_row, new_col], the_copyme: [new_good_row, new_good_col], board: tileMap }
+			return local_game; 
+
 		},
 
 		moveAi: function(row, col, avatar_id, last_player_row, last_player_col, position_y_top, position_x_left) {
