@@ -296,7 +296,8 @@ if (Meteor.isClient) {
 		
 		Game.resetTileCount(); 
 		Game.your_avatar_id = "";
-		Game.winscore = 20; 
+		Game.evil_eye = false; 
+		Game.winscore = 66; 
 		
 
 		Game.draw = function(tileMap, the_bad, the_copyme) {							   	
@@ -404,23 +405,23 @@ if (Meteor.isClient) {
 		Game.c.stroke();
 		
 		Game.network_temp = Game.network;
-		Game.network = {}
-		/*
-		Game.c.strokeStyle='rgba(119,136,153,0.2)';  
-	 
-		Game.c.beginPath()
-		var rand_pos_center = Math.floor((Math.random()*200)+600); 
-		Game.c.drawImage(Game.eye, rand_pos_center-32, rand_pos_center-48);	
-		$.each(Game.center_work, function( index, value ) {
-			Game.c.moveTo(rand_pos_center, rand_pos_center);
-			Game.c.lineTo(value.positionX+32, value.positionY-16);			
-		});	
-		Game.c.closePath();
-		Game.c.stroke()
 		
-							
-		Game.center_work = {}
-		*/
+		Game.network = {}
+		if (Game.evil_eye) {
+			Game.c.strokeStyle='rgba(119,136,153,0.2)';  
+	 
+			Game.c.beginPath()
+			var rand_pos_center = Math.floor((Math.random()*200)+600); 
+			Game.c.drawImage(Game.eye, rand_pos_center-32, rand_pos_center-48);	
+			$.each(Game.center_work, function( index, value ) {
+				Game.c.moveTo(rand_pos_center, rand_pos_center);
+				Game.c.lineTo(value.positionX+32, value.positionY-16);			
+			});	
+			Game.c.closePath();
+			Game.c.stroke()
+						
+			Game.center_work = {}
+		}
 			
 		if(Math.floor((Math.random()*10)-1)%3 == 0) {
 			Game.broccoli_kopimi_num++; 
@@ -555,12 +556,28 @@ if (Meteor.isClient) {
 	// Gameboard functions: 
 	Meteor.subscribe("gameboard");
 
-	Template.gameboard.gameboard= function () {
+	Template.gameboard.gameboard = function () {
 		game = Gameboard.findOne({});	
 		if(game) { 
 			return game;		
 		}
 	}	
+	
+	Meteor.autosubscribe(function(){
+    Gameboard.find({}).observe({
+      changed: function(item){
+        	Meteor.call('get_gameboard', function(err, data) {
+				if (err) {
+					console.log(err);
+				} else {
+				var gamemap = data;	
+				tileMap = gamemap.board;
+				Game.draw(tileMap, data.the_bad, data.the_copyme); 
+				}
+			}); 
+      }
+    });
+  });
 	
 	Handlebars.registerHelper("board_key", function(board) {
 		if(board) { 
@@ -592,25 +609,6 @@ if (Meteor.isClient) {
 	}
 	
 	Template.gameboard.events({ 	
- 		'mousemove .the_canvas': function(e) {	
-			if(Game.init_interval) { 
-				Game.init_interval = false;
-				Meteor.setTimeout(function(){
-					Meteor.call('get_gameboard', function(err, data) {
-						if (err) {
-							console.log(err);
-						} else {
-						var gamemap = data;	
-						tileMap = gamemap.board;
-						Game.draw(tileMap, data.the_bad, data.the_copyme); 
-						// Game.ismoving = true; 
-						// Game.animate_players();  
-						Game.init_interval = true;
-						}
-					});
-				}, 3000); 
-			}
-		},
 		
  		'click .the_canvas': function(e) {	
 			if (e.pageY > Game.topBoundary && e.pageY < Game.buttomBoundary && e.pageX > Game.leftBoundary && e.pageX < Game.rightBoundary ) {
@@ -1224,6 +1222,7 @@ if (Meteor.isServer) {
 	});
 	
 	Meteor.publish("gameboard", function() {
+	
 	game = Gameboard.find({_id:"1"}).observe({
 		changed: function (id, fields) {
 		  return Gameboard.find({_id:"1"}); 
