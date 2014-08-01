@@ -160,7 +160,7 @@ html, body {
 	padding-left: 12px;
 	width: 300px;
 	z-index: 1056;
-	top: 81px;
+	top: 41px;
 	left: 0;
 	height: 80%;
 	overflow: auto;    
@@ -411,9 +411,11 @@ html, body {
 	z-index: 9000; 
 }
 
+
+
 .player_pos {
-	padding-top:230px;
-	padding-left:20px;  
+	padding-top:-230px;
+	padding-left:-30px;  
 }
 
 .player_pos_img {
@@ -452,7 +454,7 @@ html, body {
 
 .score_board {
 	position: fixed;
-	top: 235px;
+	top: 262px;
 	left: 675px;
 	-webkit-transform: rotate(59deg) skew(59deg, -32deg) scale(0.65, 1.23);
 	-mozkit-transform: rotate(59deg) skew(59deg, -32deg) scale(0.65, 1.23);
@@ -464,7 +466,11 @@ html, body {
 	color: white;
 	width:1000px; 
 }
+.score_board h3 { 
+	margin:0; 
+	line-height:0; 
 	
+}	
 .disabling {
 	position: fixed;
 	width: 1600px; 
