@@ -872,7 +872,7 @@ if (Meteor.isClient) {
 								Meta_setting.update({_id: "1"}, { $set: {topic: topic}}); 
 								HandleMessage.message = '';
 								message_form.value = '';
-						} else if (splited[0] == "/omnihal") {
+						} else if (splited[0] == "/omnihal" || splited[0] == "/omnihal:") {
 							var question = ''; 
 								for (var g = 1; g < splited.length; g++) {
 									question = question + " " + splited[g]; 
